@@ -1,0 +1,28 @@
+☞ 필요한 Resource
+▶sprite
+- 무기를 들고 있지 않은 캐릭터 (2D Pixel Unit Maker - SPUM)
+- 몬스터 
+- 무기
+총 (2D Pixel Gun Weapon Pack) - 권총(뚝뚝 끊키듯이)/기관총(두두두두두)/샷건(한발에 여러발)/로켓(퍽~펑)
+칼/도끼 등 - 찌르기/베기/던지기 등 : 
+지팡이 : 
+활 : 
+▶animation (보류)
+- Idle (2D Pixel Unit Maker - SPUM)
+- Die (2D Pixel Unit Maker - SPUM)
+▶sound
+- 로비
+- 1맵
+- 2맵
+- 3맵
+- 무기
+▶effect (particle)
+
+1. 길찾기 알고리즘 (ASTAR, 미로 등 확인하기)
+기타. 피벗 기준으로 몬스터와 캐릭터의 좌표가 계산되도록 모두 재설정을 해줘야 함
+(tranform.position이 아니라 중앙 피벗으로 설정된 transform.position으로 변경해서 다시 설정하기)
+(결국 중앙 피벗 포지션을 직접 할당해서 사용하는 게 편할 듯)
+
+☞ 버그 수정
+- 고블린(몬스터)의 공격 범위를 기존과 다르게 PolygonCollider2D로 사이즈를 조절하여 공격 판정 구현
+- 빌드해서 휴대폰으로 실행할 경우 '타겟팅, 총알 발사'가 제대로 작동하지 않는 버그
