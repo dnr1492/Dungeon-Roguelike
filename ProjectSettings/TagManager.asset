@@ -49,3 +49,33 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Background
+    uniqueID: 1339877213
+    locked: 0
+  - name: Ground
+    uniqueID: 3293029793
+    locked: 0
+  - name: WallsBack
+    uniqueID: 2655905549
+    locked: 0
+  - name: PropsBack
+    uniqueID: 485907961
+    locked: 0
+  - name: Characters
+    uniqueID: 4051634553
+    locked: 0
+  - name: PropsFront
+    uniqueID: 1529183889
+    locked: 0
+  - name: WallsFront
+    uniqueID: 1073277523
+    locked: 0
+  - name: DecalsTop
+    uniqueID: 2868434241
+    locked: 0
+  - name: Effects
+    uniqueID: 4064367061
+    locked: 0
+  - name: UI
+    uniqueID: 3296198775
+    locked: 0

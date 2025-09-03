@@ -1,0 +1,1 @@
+public enum DoorDir { North, East, South, West }
