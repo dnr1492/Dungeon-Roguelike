@@ -1449,7 +1449,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decorative_16
+      name: decorative_16_Corridor
       rect:
         serializedVersion: 2
         x: 464
@@ -7995,7 +7995,6 @@ TextureImporter:
       decorative_157: 21300314
       decorative_158: 21300316
       decorative_159: 21300318
-      decorative_16: 21300032
       decorative_160: 21300320
       decorative_161: 21300322
       decorative_162: 21300324
@@ -8006,6 +8005,7 @@ TextureImporter:
       decorative_167: 21300334
       decorative_168: 21300336
       decorative_169: 21300338
+      decorative_16_Corridor: 21300032
       decorative_17: 21300034
       decorative_170: 21300340
       decorative_171: 21300342
