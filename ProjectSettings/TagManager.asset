@@ -12,6 +12,9 @@ TagManager:
   - Enemy
   - MeleeAttack
   - MonsterBody
+  - CombatRoom
+  - BossRoom
+  - EliteRoom
   layers:
   - Default
   - TransparentFX

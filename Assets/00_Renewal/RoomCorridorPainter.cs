@@ -1,15 +1,16 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class RoomCorridorPainter : MonoBehaviour
 {
-    public Tilemap baseMap;         //복도 바닥
-    public Tilemap wallMap;         //복도 벽
-    public Tilemap collisionMap;    //충돌 전용
+    [SerializeField] Tilemap baseMap;         //복도 바닥
+    [SerializeField] Tilemap wallMap;         //복도 벽
+    [SerializeField] Tilemap collisionMap;    //충돌 전용
 
-    public TileBase floorTile;      //바닥 타일
-    public TileBase wallTile;       //벽 타일
-    public TileBase collisionTile;  //충돌 타일
+    [SerializeField] TileBase floorTile;      //바닥 타일
+    [SerializeField] TileBase wallTile;       //벽 타일
+    [SerializeField] TileBase collisionTile;  //충돌 타일
 
     //출발 문 방향을 받아 가로/세로 순서를 고정
     public void PaintCorridor(Vector2Int from, Vector2Int to, int width, DoorDir startDir)
@@ -58,7 +59,7 @@ public class RoomCorridorPainter : MonoBehaviour
         int step = a.x <= b.x ? 1 : -1;
 
         //양 끝 포함
-        for (int x = a.x; x != b.x + step; x += step) 
+        for (int x = a.x; x != b.x + step; x += step)
         {
             //바닥 (통행 가능)
             for (int o = -half; o <= half; o++)
@@ -68,11 +69,16 @@ public class RoomCorridorPainter : MonoBehaviour
                 collisionMap.SetTile((Vector3Int)cell, null);
             }
 
-            //양측 벽 + 충돌
-            var top = new Vector2Int(x, a.y + (half + 1));
-            var bot = new Vector2Int(x, a.y - (half + 1));
-            PlaceWall(top);
-            PlaceWall(bot);
+            //문 시작/끝 지점에서는 측벽을 만들지 않는다
+            bool isEndColumn = (x == a.x) || (x == b.x);
+            if (!isEndColumn) // CHANGED
+            {
+                //양측 벽 + 충돌
+                var top = new Vector2Int(x, a.y + (half + 1));
+                var bot = new Vector2Int(x, a.y - (half + 1));
+                PlaceWall(top);
+                PlaceWall(bot);
+            }
         }
     }
 
@@ -83,7 +89,7 @@ public class RoomCorridorPainter : MonoBehaviour
         int step = a.y <= b.y ? 1 : -1;
 
         //양 끝 포함
-        for (int y = a.y; y != b.y + step; y += step) 
+        for (int y = a.y; y != b.y + step; y += step)
         {
             //바닥 (통행 가능)
             for (int o = -half; o <= half; o++)
@@ -93,11 +99,16 @@ public class RoomCorridorPainter : MonoBehaviour
                 collisionMap.SetTile((Vector3Int)cell, null);
             }
 
-            //양측 벽 + 충돌
-            var right = new Vector2Int(a.x + (half + 1), y);
-            var left = new Vector2Int(a.x - (half + 1), y);
-            PlaceWall(right);
-            PlaceWall(left);
+            //문 시작/끝 지점에서는 측벽을 만들지 않는다
+            bool isEndRow = (y == a.y) || (y == b.y);
+            if (!isEndRow)
+            {
+                //양측 벽 + 충돌
+                var right = new Vector2Int(a.x + (half + 1), y);
+                var left = new Vector2Int(a.x - (half + 1), y);
+                PlaceWall(right);
+                PlaceWall(left);
+            }
         }
     }
 
@@ -134,5 +145,49 @@ public class RoomCorridorPainter : MonoBehaviour
         var comp = collisionMap ? collisionMap.GetComponent<CompositeCollider2D>() : null;
         if (comp != null) comp.GenerateGeometry();
         Physics2D.SyncTransforms();
+    }
+
+    //방 입구 게이트 (락/언락)
+    public void SetDoorGate(Vector2Int doorCenter, DoorDir dir, int width, bool closed)
+    {
+        var line = GateLineCells(doorCenter, dir, width);
+        foreach (var cell in line)
+        {
+            if (closed)
+            {
+                //닫힘: 벽 + 충돌 생성, 바닥 제거
+                if (wallMap && wallTile) wallMap.SetTile(cell, wallTile);
+                if (collisionMap && collisionTile) collisionMap.SetTile(cell, collisionTile);
+                if (baseMap) baseMap.SetTile(cell, null);
+            }
+            else
+            {
+                //열림: 바닥 복구, 벽 + 충돌 제거
+                if (baseMap && floorTile) baseMap.SetTile(cell, floorTile);
+                if (wallMap) wallMap.SetTile(cell, null);
+                if (collisionMap) collisionMap.SetTile(cell, null);
+            }
+        }
+
+        Finish();
+    }
+
+    //문에 놓일 게이트 1줄 좌표를 계산
+    private IEnumerable<Vector3Int> GateLineCells(Vector2Int doorCenter, DoorDir dir, int width)
+    {
+        int half = width / 2;
+
+        if (dir == DoorDir.North || dir == DoorDir.South)
+        {
+            int y = (dir == DoorDir.North) ? doorCenter.y : doorCenter.y;
+            for (int o = -half; o <= half; o++)
+                yield return new Vector3Int(doorCenter.x + o, y, 0);
+        }
+        else
+        {
+            int x = (dir == DoorDir.East) ? doorCenter.x : doorCenter.x;
+            for (int o = -half; o <= half; o++)
+                yield return new Vector3Int(x, doorCenter.y + o, 0);
+        }
     }
 }

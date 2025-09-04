@@ -14,7 +14,7 @@ public class TilemapCollisionCopier : MonoBehaviour
     public TileBase collisionTile;  //충돌 전용 타일 (스프라이트 없어도 됨, ColliderType = Grid)
 
     [Header("Rule")]
-    public string obstacleSuffix = "_OB";  //스프라이트 이름 규칙 (예: crate_OB.png)
+    private readonly string obstacleSuffix = "_OB";  //스프라이트 이름 규칙 (예: crate_OB.png)
 
     [ContextMenu("Copy Walls + Props(BySpriteName) → Collision")]
     private void Copy()

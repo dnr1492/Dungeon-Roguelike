@@ -1,3 +1,5 @@
+ï»¿using Cysharp.Threading.Tasks;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -5,38 +7,38 @@ using UnityEngine;
 public class PlacedRoom
 {
     public GameObject go;
-    public Vector3Int origin;  //Àü¿ª ±×¸®µå ¿øÁ¡ (¹èÄ¡ À§Ä¡)
+    public Vector3Int origin;  //ì „ì—­ ê·¸ë¦¬ë“œ ì›ì  (ë°°ì¹˜ ìœ„ì¹˜)
     public List<PlacedDoor> doors = new();
 }
 
 public class PlacedDoor
 {
     public PlacedRoom room;
-    public DoorAnchor anchor;  //¹æÇâ/Æø Á¤º¸¿ë
-    public Vector3Int worldTile;  //¹® Áß¾Ó Å¸ÀÏ (Àü¿ª ±×¸®µå ±âÁØ)
+    public DoorAnchor anchor;  //ë°©í–¥/í­ ì •ë³´ìš©
+    public Vector3Int worldTile;  //ë¬¸ ì¤‘ì•™ íƒ€ì¼ (ì „ì—­ ê·¸ë¦¬ë“œ ê¸°ì¤€)
     public bool used;
 }
 
 /// <summary>
-/// ÇÁ¸®ÆÕ¿¡ ºÙÀº DoorAnchor¸¦ ÀĞ¾î¼­
-/// - ½ÃÀÛ¹æÀ» ¹èÄ¡ÇÏ°í
-/// - ±âÁ¸ ¹æÀÇ '¹Ì»ç¿ë µµ¾î'¿Í »õ ¹æÀÇ 'È£È¯ µµ¾î(Æø µ¿ÀÏ + ¹İ´ë¹æÇâ)'¸¦ Ã£¾Æ
-/// - »õ ¹æÀ» Á¤È®È÷ ¸Â´êµµ·Ï ¿øÁ¡À» °è»êÇØ ¹èÄ¡ÇÑ´Ù.
-/// º¹µµ ÆäÀÎÆÃÀº ¿©±â¼­ ÇÏÁö ¾ÊÀ½ (¿¬°á¸¸ ¼öÇà)
+/// í”„ë¦¬íŒ¹ì— ë¶™ì€ DoorAnchorë¥¼ ì½ì–´ì„œ
+/// - ì‹œì‘ë°©ì„ ë°°ì¹˜í•˜ê³ 
+/// - ê¸°ì¡´ ë°©ì˜ 'ë¯¸ì‚¬ìš© ë„ì–´'ì™€ ìƒˆ ë°©ì˜ 'í˜¸í™˜ ë„ì–´(í­ ë™ì¼ + ë°˜ëŒ€ë°©í–¥)'ë¥¼ ì°¾ì•„
+/// - ìƒˆ ë°©ì„ ì •í™•íˆ ë§ë‹¿ë„ë¡ ì›ì ì„ ê³„ì‚°í•´ ë°°ì¹˜í•œë‹¤.
+/// ë³µë„ í˜ì¸íŒ…ì€ ì—¬ê¸°ì„œ í•˜ì§€ ì•ŠìŒ (ì—°ê²°ë§Œ ìˆ˜í–‰)
 /// </summary>
 public class RoomPlacer : MonoBehaviour
 {
-    public Grid dungeonGrid;                 //DungeonRoot/Grid (Àü¿ª ±×¸®µå)
+    public Grid dungeonGrid;                 //DungeonRoot/Grid (ì „ì—­ ê·¸ë¦¬ë“œ)
     public Transform roomsRoot;              //DungeonRoot/RoomsRoot
-    public GameObject startRoomPrefab;       //½ÃÀÛ ¹æ ÇÁ¸®ÆÕ
-    public List<GameObject> candidateRooms;  //Ãß°¡ÇÒ ¹æ ÇÁ¸®ÆÕµé
-    public RoomCorridorPainter painter;      //º¹µµ ÆäÀÎÆÃ¿ë
+    public GameObject startRoomPrefab;       //ì‹œì‘ ë°© í”„ë¦¬íŒ¹
+    public List<GameObject> candidateRooms;  //ì¶”ê°€í•  ë°© í”„ë¦¬íŒ¹ë“¤
+    public RoomCorridorPainter painter;      //ë³µë„ í˜ì¸íŒ…ìš©
 
     private readonly List<PlacedRoom> placed = new();
 
-    private readonly int attachCount = 4;  //½ÃÀÛ ¹æ ¿Ü¿¡ Ãß°¡ÇÒ ¹æ °³¼ö
-    private readonly int hallMin = 5;      //º¹µµ ÃÖ¼Ò ±æÀÌ(Å¸ÀÏ)
-    private readonly int hallMax = 10;     //º¹µµ ÃÖ´ë ±æÀÌ(Å¸ÀÏ)
+    private readonly int attachCount = 4;  //ì‹œì‘ ë°© ì™¸ì— ì¶”ê°€í•  ë°© ê°œìˆ˜
+    private readonly int hallMin = 5;      //ë³µë„ ìµœì†Œ ê¸¸ì´(íƒ€ì¼)
+    private readonly int hallMax = 10;     //ë³µë„ ìµœëŒ€ ê¸¸ì´(íƒ€ì¼)
 
     private void Start()
     {
@@ -45,26 +47,26 @@ public class RoomPlacer : MonoBehaviour
 
     public void Generate()
     {
-        //ÃÊ±âÈ­
+        //ì´ˆê¸°í™”
         ClearChildren(roomsRoot);
         placed.Clear();
 
-        //1) (Àü¿ª ±×¸®µå ¿øÁ¡¿¡) ½ÃÀÛ ¹æ ¹èÄ¡
+        //1) (ì „ì—­ ê·¸ë¦¬ë“œ ì›ì ì—) ì‹œì‘ ë°© ë°°ì¹˜
         var start = PlaceRoomAt(startRoomPrefab, Vector3Int.zero);
         placed.Add(start);
 
-        //2) ÁöÁ¤ °³¼ö¸¸Å­ ÀÌ¾îºÙÀÌ±â
+        //2) ì§€ì • ê°œìˆ˜ë§Œí¼ ì´ì–´ë¶™ì´ê¸°
         for (int i = 0; i < attachCount; i++)
         {
             var nextPrefab = candidateRooms[Random.Range(0, candidateRooms.Count)];
             if (!TryAttachRoom(nextPrefab))
             {
-                Debug.Log("[RoomPlacer] ºÙÀÏ È£È¯ µµ¾î°¡ ¾øÀ½. ´ÙÀ½ ½Ãµµ.");
+                Debug.Log("[RoomPlacer] ë¶™ì¼ í˜¸í™˜ ë„ì–´ê°€ ì—†ìŒ. ë‹¤ìŒ ì‹œë„.");
             }
         }
     }
 
-    //±âÁ¸ÀÇ '¹Ì»ç¿ë ¹®'°ú »õ ¹æÀÇ 'È£È¯µÇ´Â ¹®'À» Ã£¾Æ ¹èÄ¡
+    //ê¸°ì¡´ì˜ 'ë¯¸ì‚¬ìš© ë¬¸'ê³¼ ìƒˆ ë°©ì˜ 'í˜¸í™˜ë˜ëŠ” ë¬¸'ì„ ì°¾ì•„ ë°°ì¹˜
     private bool TryAttachRoom(GameObject newRoomPrefab)
     {
         foreach (var a in AllFreeDoors())
@@ -72,7 +74,7 @@ public class RoomPlacer : MonoBehaviour
             var preview = Instantiate(newRoomPrefab);
             var newAnchors = preview.GetComponentsInChildren<DoorAnchor>(true);
 
-            //Æø µ¿ÀÏ + ¹İ´ë ¹æÇâ¸¸ ÈÄº¸
+            //í­ ë™ì¼ + ë°˜ëŒ€ ë°©í–¥ë§Œ í›„ë³´
             var candidates = newAnchors.Where(b =>
                 b.width == a.anchor.width &&
                 DoorAnchor.Opposite(a.anchor.direction) == b.direction);
@@ -83,7 +85,7 @@ public class RoomPlacer : MonoBehaviour
                 var bLocalCell = dungeonGrid.WorldToCell(bWorldCenter);
                 var origin = a.worldTile - (Vector3Int)new Vector2Int(bLocalCell.x, bLocalCell.y);
 
-                //º¹µµ ±æÀÌ¸¸Å­, Ãâ¹ß ¹® ¹æÇâÀ¸·Î ¹æÀ» ´õ ¹Ğ¾î³½´Ù
+                //ë³µë„ ê¸¸ì´ë§Œí¼, ì¶œë°œ ë¬¸ ë°©í–¥ìœ¼ë¡œ ë°©ì„ ë” ë°€ì–´ë‚¸ë‹¤
                 int L = Random.Range(hallMin, hallMax + 1);
                 origin += DirToVec(a.anchor.direction) * L;
 
@@ -93,12 +95,12 @@ public class RoomPlacer : MonoBehaviour
                 var placedB = FindMatchingDoor(placed, b);
                 if (placedB == null)
                 {
-                    Debug.Log("[RoomPlacer] »õ ¹æ¿¡¼­ ¸ÅÄªµÇ´Â ¹®À» Ã£Áö ¸øÇÔ");
+                    Debug.Log("[RoomPlacer] ìƒˆ ë°©ì—ì„œ ë§¤ì¹­ë˜ëŠ” ë¬¸ì„ ì°¾ì§€ ëª»í•¨");
                     Destroy(placed.go);
                     return false;
                 }
 
-                //º¸Á¤À» '¸Â´ê±â'°¡ ¾Æ´Ï¶ó 'LÄ­ ¶³¾îÁø À§Ä¡'¿¡ ¸ÂÃã
+                //ë³´ì •ì„ 'ë§ë‹¿ê¸°'ê°€ ì•„ë‹ˆë¼ 'Lì¹¸ ë–¨ì–´ì§„ ìœ„ì¹˜'ì— ë§ì¶¤
                 var desiredTo = a.worldTile + DirToVec(a.anchor.direction) * L;
                 var delta = desiredTo - placedB.worldTile;
                 if (delta != Vector3Int.zero)
@@ -134,7 +136,7 @@ public class RoomPlacer : MonoBehaviour
                 if (!d.used) yield return d;
     }
 
-    //»õ ¹æÀ» origin¿¡ ¹èÄ¡ÇÏ°í DoorAnchorµéÀ» ½ºÄµÇÏ¿© worldTileÀ» °è»ê
+    //ìƒˆ ë°©ì„ originì— ë°°ì¹˜í•˜ê³  DoorAnchorë“¤ì„ ìŠ¤ìº”í•˜ì—¬ worldTileì„ ê³„ì‚°
     private PlacedRoom PlaceRoomAt(GameObject prefab, Vector3Int origin)
     {
         var inst = Instantiate(prefab, roomsRoot);
@@ -146,7 +148,7 @@ public class RoomPlacer : MonoBehaviour
         return pr;
     }
 
-    //¹èÄ¡µÈ ¹æÀÇ DoorAnchorµé·Î PlacedDoor ¸ñ·ÏÀ» ´Ù½Ã ±¸¼º
+    //ë°°ì¹˜ëœ ë°©ì˜ DoorAnchorë“¤ë¡œ PlacedDoor ëª©ë¡ì„ ë‹¤ì‹œ êµ¬ì„±
     private void RebuildPlacedDoors(PlacedRoom pr)
     {
         pr.doors.Clear();
@@ -164,20 +166,20 @@ public class RoomPlacer : MonoBehaviour
         }
     }
 
-    //Æø/¹æÇâ ÀÏÄ¡ + °¡Àå °¡±î¿î ¹®À» ¼±ÅÃ (µ¿ÀÏ ÇÁ¸®ÆÕ ³»¿¡¼­ ´ëÀÀµÇ´Â DoorAnchor¸¦ Ã£´Â º¸Á¶)
+    //í­/ë°©í–¥ ì¼ì¹˜ + ê°€ì¥ ê°€ê¹Œìš´ ë¬¸ì„ ì„ íƒ (ë™ì¼ í”„ë¦¬íŒ¹ ë‚´ì—ì„œ ëŒ€ì‘ë˜ëŠ” DoorAnchorë¥¼ ì°¾ëŠ” ë³´ì¡°)
     private PlacedDoor FindMatchingDoor(PlacedRoom placed, DoorAnchor srcAnchor)
     {
         var cands = placed.doors.Where(d => d.anchor.width == srcAnchor.width &&
                                             d.anchor.direction == srcAnchor.direction).ToList();
         if (cands.Count == 0) return null;
 
-        //°¡Àå °¡±î¿î °Í ¼±ÅÃ (´ëºÎºĞ ÇÑ °³¸¸ Á¸Àç)
+        //ê°€ì¥ ê°€ê¹Œìš´ ê²ƒ ì„ íƒ (ëŒ€ë¶€ë¶„ í•œ ê°œë§Œ ì¡´ì¬)
         cands.Sort((x, y) => (x.worldTile - placed.origin).sqrMagnitude
                            .CompareTo((y.worldTile - placed.origin).sqrMagnitude));
         return cands[0];
     }
 
-    //DoorDir ¡æ Å¸ÀÏ ÁÂÇ¥ ´ÜÀ§ ¹æÇâ º¤ÅÍ
+    //DoorDir â†’ íƒ€ì¼ ì¢Œí‘œ ë‹¨ìœ„ ë°©í–¥ ë²¡í„°
     private Vector3Int DirToVec(DoorDir d)
     {
         return d == DoorDir.North ? new Vector3Int(0, 1, 0) :
@@ -190,5 +192,44 @@ public class RoomPlacer : MonoBehaviour
     {
         for (int i = t.childCount - 1; i >= 0; i--)
             Destroy(t.GetChild(i).gameObject);
+    }
+
+    //íŠ¹ì • ë°©ì˜ ë¬¸ì„ ë‹«ê¸°
+    public void LockRoom(PlacedRoom pr)
+    {
+        if (painter == null || pr == null) return;
+        foreach (var d in pr.doors)
+        {
+            painter.SetDoorGate(
+                (Vector2Int)d.worldTile,
+                d.anchor.direction,
+                d.anchor.width,
+                true);
+        }
+    }
+    
+    //íŠ¹ì • ë°©ì˜ ë¬¸ì„ ì—´ê¸°
+    public void UnlockRoom(PlacedRoom pr)
+    {
+        if (painter == null || pr == null) return;
+        foreach (var d in pr.doors)
+        {
+            painter.SetDoorGate(
+                (Vector2Int)d.worldTile,
+                d.anchor.direction,
+                d.anchor.width,
+                false);
+        }
+    }
+
+    //í•´ë‹¹ GameObjectê°€ ì†í•œ ë°°ì¹˜ ë°©(PlacedRoom) ì°¾ê¸°
+    public PlacedRoom FindPlacedRoomByInstance(GameObject instanceRoot)
+    {
+        if (instanceRoot == null) return null;
+        foreach (var pr in placed)
+        {
+            if (pr.go == instanceRoot) return pr;
+        }
+        return null;
     }
 }
