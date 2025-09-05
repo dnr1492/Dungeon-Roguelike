@@ -1,6 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -9,6 +7,7 @@ public class PlacedRoom
     public GameObject go;
     public Vector3Int origin;  //전역 그리드 원점 (배치 위치)
     public List<PlacedDoor> doors = new();
+    public List<Vector3Int> cells = new List<Vector3Int>();  //이 방이 점유하는 전역 그리드 셀 목록 (겹침 검사 / 등록용)
 }
 
 public class PlacedDoor
@@ -35,10 +34,11 @@ public class RoomPlacer : MonoBehaviour
     public RoomCorridorPainter painter;      //복도 페인팅용
 
     private readonly List<PlacedRoom> placed = new();
+    private readonly HashSet<Vector3Int> occupied = new HashSet<Vector3Int>();  //전역 그리드 점유 셀 (방 + 복도)
 
-    private readonly int attachCount = 4;  //시작 방 외에 추가할 방 개수
-    private readonly int hallMin = 5;      //복도 최소 길이(타일)
-    private readonly int hallMax = 10;     //복도 최대 길이(타일)
+    private readonly int attachCount = 10;  //시작 방 외에 추가할 방 개수
+    private readonly int hallMin = 5;       //복도 최소 길이(타일)
+    private readonly int hallMax = 10;      //복도 최대 길이(타일)
 
     private void Start()
     {
@@ -50,6 +50,7 @@ public class RoomPlacer : MonoBehaviour
         //초기화
         ClearChildren(roomsRoot);
         placed.Clear();
+        occupied.Clear();
 
         //1) (전역 그리드 원점에) 시작 방 배치
         var start = PlaceRoomAt(startRoomPrefab, Vector3Int.zero);
@@ -61,7 +62,7 @@ public class RoomPlacer : MonoBehaviour
             var nextPrefab = candidateRooms[Random.Range(0, candidateRooms.Count)];
             if (!TryAttachRoom(nextPrefab))
             {
-                Debug.Log("[RoomPlacer] 붙일 호환 도어가 없음. 다음 시도.");
+                Debug.Log("[RoomPlacer] 붙일 호환되는 문이 없음. 다음 시도.");
             }
         }
     }
@@ -74,43 +75,54 @@ public class RoomPlacer : MonoBehaviour
             var preview = Instantiate(newRoomPrefab);
             var newAnchors = preview.GetComponentsInChildren<DoorAnchor>(true);
 
-            //폭 동일 + 반대 방향만 후보
             var candidates = newAnchors.Where(b =>
                 b.width == a.anchor.width &&
                 DoorAnchor.Opposite(a.anchor.direction) == b.direction);
 
             foreach (var b in candidates)
             {
-                var bWorldCenter = b.GetWorldCenter();
-                var bLocalCell = dungeonGrid.WorldToCell(bWorldCenter);
-                var origin = a.worldTile - (Vector3Int)new Vector2Int(bLocalCell.x, bLocalCell.y);
+                //1) 후보 원점(originCandidate) 계산
+                var bWorldCenter_Pre = b.GetWorldCenter();
+                var bLocalCell_Pre = dungeonGrid.WorldToCell(bWorldCenter_Pre);
+                var originCandidate = a.worldTile - (Vector3Int)new Vector2Int(bLocalCell_Pre.x, bLocalCell_Pre.y);
 
-                //복도 길이만큼, 출발 문 방향으로 방을 더 밀어낸다
+                //2) 복도 길이만큼 직선 오프셋
                 int L = Random.Range(hallMin, hallMax + 1);
-                origin += DirToVec(a.anchor.direction) * L;
+                originCandidate += DirToVec(a.anchor.direction) * L;
 
-                Destroy(preview);
-                var placed = PlaceRoomAt(newRoomPrefab, origin);
-
-                var placedB = FindMatchingDoor(placed, b);
-                if (placedB == null)
-                {
-                    Debug.Log("[RoomPlacer] 새 방에서 매칭되는 문을 찾지 못함");
-                    Destroy(placed.go);
-                    return false;
-                }
-
-                //보정을 '맞닿기'가 아니라 'L칸 떨어진 위치'에 맞춤
+                //3) preview를 originCandidate 위치에 두고, b의 '문 중앙 셀' 재계산
+                preview.transform.position = dungeonGrid.CellToWorld(originCandidate);
                 var desiredTo = a.worldTile + DirToVec(a.anchor.direction) * L;
-                var delta = desiredTo - placedB.worldTile;
-                if (delta != Vector3Int.zero)
+                var bWorldCell_AtCandidate = dungeonGrid.WorldToCell(b.GetWorldCenter());
+
+                //4) 문 중심이 정확히 L칸 떨어지도록 최종 원점 보정 (finalOrigin)
+                var delta = desiredTo - bWorldCell_AtCandidate;
+                var finalOrigin = originCandidate + delta;
+
+                //5) preview를 finalOrigin으로 옮겨서 실제 점유 셀을 수집
+                preview.transform.position = dungeonGrid.CellToWorld(finalOrigin);
+
+                //방 점유 셀 추출
+                var roomCells = GetRoomCells(preview);
+
+                //복도 점유 셀 계산 (직선)
+                var hallCells = EnumerateCorridorCells((Vector2Int)a.worldTile,
+                                                       (Vector2Int)desiredTo,
+                                                       a.anchor.width,
+                                                       a.anchor.direction);
+
+                //겹침 검사 (방 vs 전역 / 복도 vs 전역)
+                if (HasOverlap(roomCells) || HasOverlap(hallCells))
                 {
-                    placed.origin += delta;
-                    placed.go.transform.position = dungeonGrid.CellToWorld(placed.origin);
-                    RebuildPlacedDoors(placed);
-                    placedB = FindMatchingDoor(placed, b);
+                    //겹치면 패스
+                    continue;
                 }
 
+                //실배치
+                Destroy(preview);
+                var placedRoom = PlaceRoomAt(newRoomPrefab, finalOrigin);
+
+                //복도 페인팅 및 점유 등록
                 if (painter != null)
                 {
                     var from = (Vector2Int)a.worldTile;
@@ -118,8 +130,11 @@ public class RoomPlacer : MonoBehaviour
                     painter.PaintCorridor(from, to, a.anchor.width, a.anchor.direction);
                 }
 
+                //복도 점유 등록
+                foreach (var c in hallCells) occupied.Add(c);
+
                 a.used = true;
-                this.placed.Add(placed);
+                this.placed.Add(placedRoom);
                 return true;
             }
 
@@ -145,6 +160,11 @@ public class RoomPlacer : MonoBehaviour
 
         var pr = new PlacedRoom { go = inst, origin = origin };
         RebuildPlacedDoors(pr);
+
+        //점유 셀 계산 및 등록
+        pr.cells = GetRoomCells(inst);
+        foreach (var c in pr.cells) occupied.Add(c);
+
         return pr;
     }
 
@@ -164,19 +184,6 @@ public class RoomPlacer : MonoBehaviour
                 worldTile = worldCell
             });
         }
-    }
-
-    //폭/방향 일치 + 가장 가까운 문을 선택 (동일 프리팹 내에서 대응되는 DoorAnchor를 찾는 보조)
-    private PlacedDoor FindMatchingDoor(PlacedRoom placed, DoorAnchor srcAnchor)
-    {
-        var cands = placed.doors.Where(d => d.anchor.width == srcAnchor.width &&
-                                            d.anchor.direction == srcAnchor.direction).ToList();
-        if (cands.Count == 0) return null;
-
-        //가장 가까운 것 선택 (대부분 한 개만 존재)
-        cands.Sort((x, y) => (x.worldTile - placed.origin).sqrMagnitude
-                           .CompareTo((y.worldTile - placed.origin).sqrMagnitude));
-        return cands[0];
     }
 
     //DoorDir → 타일 좌표 단위 방향 벡터
@@ -231,5 +238,60 @@ public class RoomPlacer : MonoBehaviour
             if (pr.go == instanceRoot) return pr;
         }
         return null;
+    }
+
+    //미리보기/배치된 인스턴스의 '타일이 실제로 존재하는' 전역 셀을 수집
+    private List<Vector3Int> GetRoomCells(GameObject instanceRoot)
+    {
+        var list = new List<Vector3Int>();
+        var tilemaps = instanceRoot.GetComponentsInChildren<UnityEngine.Tilemaps.Tilemap>(true);
+
+        foreach (var tm in tilemaps)
+        {
+            //타일맵의 유효 영역을 압축하여 순회
+            var bounds = tm.cellBounds;
+            foreach (var pos in bounds.allPositionsWithin)
+            {
+                if (!tm.HasTile(pos)) continue;
+
+                //이 타일의 월드 좌표 -> 던전 전역 그리드 셀
+                var world = tm.CellToWorld(pos);
+                var cell = dungeonGrid.WorldToCell(world);
+                list.Add(cell);
+            }
+        }
+        return list;
+    }
+
+    //선형 복도 구간의 점유 셀 나열 (폭 고려)
+    private List<Vector3Int> EnumerateCorridorCells(Vector2Int from, Vector2Int to, int width, DoorDir dir)
+    {
+        var res = new List<Vector3Int>();
+
+        var step = DirToVec(dir);
+        var len = Mathf.Abs((to - from).x) + Mathf.Abs((to - from).y);  //직선이므로 L1 길이 == 실제 길이
+
+        for (int i = 0; i <= len; i++)
+        {
+            var center = (Vector3Int)(from + i * (Vector2Int)new Vector2Int(step.x, step.y));
+
+            //폭(w) 만큼 직교 방향으로 확장
+            Vector3Int ortho = (dir == DoorDir.North || dir == DoorDir.South) ? new Vector3Int(1, 0, 0)
+                                                                               : new Vector3Int(0, 1, 0);
+            int half = width / 2;
+            for (int o = -half; o <= half; o++)
+            {
+                res.Add(center + ortho * o);
+            }
+        }
+        return res;
+    }
+
+    //전역 점유와 교차하는지
+    private bool HasOverlap(IEnumerable<Vector3Int> cells)
+    {
+        foreach (var c in cells)
+            if (occupied.Contains(c)) return true;
+        return false;
     }
 }

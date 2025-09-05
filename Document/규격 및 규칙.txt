@@ -23,6 +23,7 @@ RoomPrefab Tag
 - CombatRoom, BoosRoom, EliteRoom 중 택1 설정
 - 해당 전투 Room은 게이트 열고 닫히는 이벤트 존재
 - 그 외 방은 패스
+- *Player에 'Player' Tag 및 Collider2D, Rigidbody2D가 필수
 
 RoomPrefab 이름 네이밍 규칙
 - 사이즈 / 문 개수 / 문 방향 / 변형 번호

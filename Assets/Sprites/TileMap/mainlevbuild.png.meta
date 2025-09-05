@@ -12315,7 +12315,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mainlevbuild_443
+      name: mainlevbuild_443_Up
       rect:
         serializedVersion: 2
         x: 320
@@ -13407,7 +13407,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mainlevbuild_495
+      name: mainlevbuild_495_Left
       rect:
         serializedVersion: 2
         x: 256
@@ -13575,7 +13575,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mainlevbuild_503
+      name: mainlevbuild_503_Right
       rect:
         serializedVersion: 2
         x: 384
@@ -14247,7 +14247,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mainlevbuild_535
+      name: mainlevbuild_535_Down
       rect:
         serializedVersion: 2
         x: 320
@@ -23502,7 +23502,7 @@ TextureImporter:
       mainlevbuild_440: 21300880
       mainlevbuild_441: 21300882
       mainlevbuild_442: 21300884
-      mainlevbuild_443: 21300886
+      mainlevbuild_443_Up: 21300886
       mainlevbuild_444: 21300888
       mainlevbuild_445: 21300890
       mainlevbuild_446: 21300892
@@ -23559,7 +23559,7 @@ TextureImporter:
       mainlevbuild_492: 21300984
       mainlevbuild_493: 21300986
       mainlevbuild_494: 21300988
-      mainlevbuild_495: 21300990
+      mainlevbuild_495_Left: 21300990
       mainlevbuild_496: 21300992
       mainlevbuild_497: 21300994
       mainlevbuild_498: 21300996
@@ -23569,7 +23569,7 @@ TextureImporter:
       mainlevbuild_500: 21301000
       mainlevbuild_501: 21301002
       mainlevbuild_502: 21301004
-      mainlevbuild_503: 21301006
+      mainlevbuild_503_Right: 21301006
       mainlevbuild_504: 21301008
       mainlevbuild_505: 21301010
       mainlevbuild_506: 21301012
@@ -23604,7 +23604,7 @@ TextureImporter:
       mainlevbuild_532: 21301064
       mainlevbuild_533: 21301066
       mainlevbuild_534: 21301068
-      mainlevbuild_535: 21301070
+      mainlevbuild_535_Down: 21301070
       mainlevbuild_536: 21301072
       mainlevbuild_537: 21301074
       mainlevbuild_538: 21301076

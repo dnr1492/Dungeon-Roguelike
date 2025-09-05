@@ -420,7 +420,7 @@ GameObject:
   - component: {fileID: 648406372}
   - component: {fileID: 648406371}
   m_Layer: 0
-  m_Name: TestPlayer
+  m_Name: =====  TestPlayer  =====
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

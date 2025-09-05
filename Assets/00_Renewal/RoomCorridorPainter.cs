@@ -12,6 +12,12 @@ public class RoomCorridorPainter : MonoBehaviour
     [SerializeField] TileBase wallTile;       //벽 타일
     [SerializeField] TileBase collisionTile;  //충돌 타일
 
+    //방향별 벽 타일(미지정 시 기본 wallTile 사용)
+    [SerializeField] TileBase wallTileUp;
+    [SerializeField] TileBase wallTileDown;
+    [SerializeField] TileBase wallTileLeft;
+    [SerializeField] TileBase wallTileRight;
+
     //출발 문 방향을 받아 가로/세로 순서를 고정
     public void PaintCorridor(Vector2Int from, Vector2Int to, int width, DoorDir startDir)
     {
@@ -29,36 +35,17 @@ public class RoomCorridorPainter : MonoBehaviour
             return;
         }
 
-        //규칙 확정 (North/South → 가로 먼저, East/West → 세로 먼저)
-        bool horizontalFirst = (startDir == DoorDir.North || startDir == DoorDir.South);
-
-        Vector2Int turn = horizontalFirst
-            ? new Vector2Int(to.x, from.y)   //가로 먼저
-            : new Vector2Int(from.x, to.y);  //세로 먼저
-
-        if (horizontalFirst)
-        {
-            PaintHorizontalSegment(from, turn, width);
-            PaintVerticalSegment(turn, to, width);
-        }
-        else
-        {
-            PaintVerticalSegment(from, turn, width);
-            PaintHorizontalSegment(turn, to, width);
-        }
-
-        CornerReinforce(turn, width);
-
         Finish();
     }
 
-    //가로 구간: x만 이동, y는 고정. 바닥 폭을 세로 방향으로 확장하고 양측 '벽 + 충돌' 생성
+    //가로 구간 (좌 ↔ 우)
+    //바닥 동일
+    //'상/하' 벽 생성
     private void PaintHorizontalSegment(Vector2Int a, Vector2Int b, int width)
     {
         int half = width / 2;
         int step = a.x <= b.x ? 1 : -1;
 
-        //양 끝 포함
         for (int x = a.x; x != b.x + step; x += step)
         {
             //바닥 (통행 가능)
@@ -69,26 +56,26 @@ public class RoomCorridorPainter : MonoBehaviour
                 collisionMap.SetTile((Vector3Int)cell, null);
             }
 
-            //문 시작/끝 지점에서는 측벽을 만들지 않는다
+            //문 시작/끝 지점 제외 벽 생성
             bool isEndColumn = (x == a.x) || (x == b.x);
-            if (!isEndColumn) // CHANGED
+            if (!isEndColumn)
             {
-                //양측 벽 + 충돌
                 var top = new Vector2Int(x, a.y + (half + 1));
                 var bot = new Vector2Int(x, a.y - (half + 1));
-                PlaceWall(top);
-                PlaceWall(bot);
+                PlaceWallDirectional(top, "Up");
+                PlaceWallDirectional(bot, "Down");
             }
         }
     }
 
-    //세로 구간: y만 이동, x는 고정. 바닥 폭을 가로 방향으로 확장하고 양측 '벽 + 충돌' 생성
+    //세로 구간 (상 ↔ 하)
+    //바닥 동일
+    //'좌/우' 벽 생성
     private void PaintVerticalSegment(Vector2Int a, Vector2Int b, int width)
     {
         int half = width / 2;
         int step = a.y <= b.y ? 1 : -1;
 
-        //양 끝 포함
         for (int y = a.y; y != b.y + step; y += step)
         {
             //바닥 (통행 가능)
@@ -99,37 +86,29 @@ public class RoomCorridorPainter : MonoBehaviour
                 collisionMap.SetTile((Vector3Int)cell, null);
             }
 
-            //문 시작/끝 지점에서는 측벽을 만들지 않는다
+            //문 시작/끝 지점 제외 벽 생성
             bool isEndRow = (y == a.y) || (y == b.y);
             if (!isEndRow)
             {
-                //양측 벽 + 충돌
                 var right = new Vector2Int(a.x + (half + 1), y);
                 var left = new Vector2Int(a.x - (half + 1), y);
-                PlaceWall(right);
-                PlaceWall(left);
+                PlaceWallDirectional(right, "Right");
+                PlaceWallDirectional(left, "Left");
             }
         }
     }
 
-    //ㄱ자 코너의 외곽 모서리를 보강 (틈 방지)
-    private void CornerReinforce(Vector2Int turn, int width)
+    //방향별로 벽/충돌을 찍는 헬퍼
+    private void PlaceWallDirectional(Vector2Int pos, string dir)
     {
-        int half = width / 2;
-        PlaceWall(new Vector2Int(turn.x + (half + 1), turn.y + (half + 1)));
-        PlaceWall(new Vector2Int(turn.x + (half + 1), turn.y - (half + 1)));
-        PlaceWall(new Vector2Int(turn.x - (half + 1), turn.y + (half + 1)));
-        PlaceWall(new Vector2Int(turn.x - (half + 1), turn.y - (half + 1)));
-    }
+        TileBase use = wallTile;
+        if (dir == "Up" && wallTileUp) use = wallTileUp;
+        if (dir == "Down" && wallTileDown) use = wallTileDown;
+        if (dir == "Left" && wallTileLeft) use = wallTileLeft;
+        if (dir == "Right" && wallTileRight) use = wallTileRight;
 
-    //벽 타일을 찍고, 동일 좌표에 충돌 타일도 생성
-    private void PlaceWall(Vector2Int pos)
-    {
-        if (wallMap && wallTile)
-            wallMap.SetTile((Vector3Int)pos, wallTile);
-
-        if (collisionMap && collisionTile)
-            collisionMap.SetTile((Vector3Int)pos, collisionTile);
+        if (wallMap && use) wallMap.SetTile((Vector3Int)pos, use);
+        if (collisionMap && collisionTile) collisionMap.SetTile((Vector3Int)pos, collisionTile);
     }
 
     //타일 갱신 + 콜라이더 자동 재생성
@@ -179,13 +158,13 @@ public class RoomCorridorPainter : MonoBehaviour
 
         if (dir == DoorDir.North || dir == DoorDir.South)
         {
-            int y = (dir == DoorDir.North) ? doorCenter.y : doorCenter.y;
+            int y = doorCenter.y;
             for (int o = -half; o <= half; o++)
                 yield return new Vector3Int(doorCenter.x + o, y, 0);
         }
         else
         {
-            int x = (dir == DoorDir.East) ? doorCenter.x : doorCenter.x;
+            int x = doorCenter.x;
             for (int o = -half; o <= half; o++)
                 yield return new Vector3Int(x, doorCenter.y + o, 0);
         }
