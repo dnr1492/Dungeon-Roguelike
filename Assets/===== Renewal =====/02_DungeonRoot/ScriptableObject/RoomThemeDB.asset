@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efdb8d65c89214946a88084043720a6d, type: 3}
+  m_Name: RoomThemeDB
+  m_EditorClassIdentifier: 
+  themeSets:
+  - theme: 4
+    combatDefault:
+    - {fileID: 11400000, guid: 26b3dc2269085e54d96d124228f7a884, type: 2}
+    - {fileID: 11400000, guid: 7d59faf142651eb4f80c777f37eac591, type: 2}
+    - {fileID: 11400000, guid: 732939e16518ee24ba70e3967efec2fa, type: 2}
+    - {fileID: 11400000, guid: a81c2cf2bfe57d14a9a9ea82b712d1fa, type: 2}
+    - {fileID: 11400000, guid: 1dfc90a28a48a914699b0f5df5626cbb, type: 2}
+    - {fileID: 11400000, guid: 9308ace6c4bdc504ab830299b8e197e1, type: 2}
+    - {fileID: 11400000, guid: d1267b0dcc2fc6343b239cd6e712758d, type: 2}
+    - {fileID: 11400000, guid: 46af1c908bf2d2c4b8f8b27ec1709787, type: 2}
+    - {fileID: 11400000, guid: f18f8029813da9244bc643ab3e46c740, type: 2}
+    - {fileID: 11400000, guid: 9fd25707836bfbf41a29370d13723098, type: 2}
+    - {fileID: 11400000, guid: e69b467dde008be42afa29de2fa23c09, type: 2}
+    - {fileID: 11400000, guid: 1eb832e801ca16d43894bea979486b76, type: 2}
+    - {fileID: 11400000, guid: 5ba6fdaa5d6188e4d9bb567d1bd0482d, type: 2}
+    eliteDefault:
+    - {fileID: 11400000, guid: 26b3dc2269085e54d96d124228f7a884, type: 2}
+    - {fileID: 11400000, guid: 7d59faf142651eb4f80c777f37eac591, type: 2}
+    - {fileID: 11400000, guid: 732939e16518ee24ba70e3967efec2fa, type: 2}
+    - {fileID: 11400000, guid: a81c2cf2bfe57d14a9a9ea82b712d1fa, type: 2}
+    - {fileID: 11400000, guid: 1dfc90a28a48a914699b0f5df5626cbb, type: 2}
+    - {fileID: 11400000, guid: 9308ace6c4bdc504ab830299b8e197e1, type: 2}
+    - {fileID: 11400000, guid: d1267b0dcc2fc6343b239cd6e712758d, type: 2}
+    - {fileID: 11400000, guid: 46af1c908bf2d2c4b8f8b27ec1709787, type: 2}
+    - {fileID: 11400000, guid: f18f8029813da9244bc643ab3e46c740, type: 2}
+    - {fileID: 11400000, guid: 9fd25707836bfbf41a29370d13723098, type: 2}
+    - {fileID: 11400000, guid: e69b467dde008be42afa29de2fa23c09, type: 2}
+    - {fileID: 11400000, guid: 1eb832e801ca16d43894bea979486b76, type: 2}
+    - {fileID: 11400000, guid: 5ba6fdaa5d6188e4d9bb567d1bd0482d, type: 2}
+    overrides: []

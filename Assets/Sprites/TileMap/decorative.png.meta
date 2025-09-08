@@ -1428,7 +1428,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decorative_15
+      name: decorative_15_OB
       rect:
         serializedVersion: 2
         x: 448
@@ -2772,7 +2772,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decorative_79
+      name: decorative_79_OB
       rect:
         serializedVersion: 2
         x: 432
@@ -7984,7 +7984,6 @@ TextureImporter:
       decorative_147: 21300294
       decorative_148: 21300296
       decorative_149: 21300298
-      decorative_15: 21300030
       decorative_150: 21300300
       decorative_151: 21300302
       decorative_152: 21300304
@@ -7995,6 +7994,7 @@ TextureImporter:
       decorative_157: 21300314
       decorative_158: 21300316
       decorative_159: 21300318
+      decorative_15_OB: 21300030
       decorative_160: 21300320
       decorative_161: 21300322
       decorative_162: 21300324
@@ -8228,7 +8228,7 @@ TextureImporter:
       decorative_76: 21300152
       decorative_77: 21300154
       decorative_78: 21300156
-      decorative_79: 21300158
+      decorative_79_OB: 21300158
       decorative_8: 21300016
       decorative_80: 21300160
       decorative_81: 21300162

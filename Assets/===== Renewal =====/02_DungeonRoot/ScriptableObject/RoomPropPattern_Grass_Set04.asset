@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff5bdcde8fbd031488bc2ca2cd7908ba, type: 3}
+  m_Name: RoomPropPattern_Grass_Set04
+  m_EditorClassIdentifier: 
+  weight: 1
+  cells:
+  - offset: {x: 0, y: 0}
+    tile: {fileID: 11400000, guid: cb7e2437584d1874386c1084b420866e, type: 2}
+    obstacle: 0
+  - offset: {x: 0, y: 1}
+    tile: {fileID: 11400000, guid: 6eebf7ac77027c84ab994bd04228400b, type: 2}
+    obstacle: 0
+  - offset: {x: 1, y: 0}
+    tile: {fileID: 11400000, guid: f8b238c8dd4fa9f419d1c4708f92b026, type: 2}
+    obstacle: 0
+  - offset: {x: 1, y: 1}
+    tile: {fileID: 11400000, guid: f4851a7a735797a4c94737c0a14b2d7b, type: 2}
+    obstacle: 0
+  - offset: {x: 1, y: 2}
+    tile: {fileID: 11400000, guid: ca995b5b4a418474f9251ba195f6a9c1, type: 2}
+    obstacle: 0
+  - offset: {x: 2, y: 0}
+    tile: {fileID: 11400000, guid: 0a4de5cfce7c83245b8f287a2c615382, type: 2}
+    obstacle: 0
+  - offset: {x: 2, y: 1}
+    tile: {fileID: 11400000, guid: 1d23a0e7a2d15414ca5abe9e636649f7, type: 2}
+    obstacle: 0
+  allowRotate90: 0
+  allowMirrorX: 0
+  allowMirrorY: 0
