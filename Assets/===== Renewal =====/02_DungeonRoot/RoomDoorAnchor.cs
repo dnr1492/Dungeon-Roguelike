@@ -3,7 +3,7 @@ using UnityEngine;
 
 [ExecuteAlways]
 [DisallowMultipleComponent]
-public class DoorAnchor : MonoBehaviour
+public class RoomDoorAnchor : MonoBehaviour
 {
     [Tooltip("문이 뚫린 벽의 방향")] public DoorDir direction = DoorDir.North;
     [Tooltip("문 폭(타일 수)")] [Min(1)] public int width = 1;

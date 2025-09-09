@@ -23,10 +23,10 @@ RoomPrefab 이름 네이밍 규칙
 - ex) ShowRoom_12x16_E_01
 
 RoomPrefab 문 규칙
-- 게임 오브젝트를 문 개수만큼 생성해서 해당 좌표의 중간에 배치 후 DoorAnchor 컴포넌트를 붙이기
+- 게임 오브젝트를 문 개수만큼 생성해서 해당 좌표의 중간에 배치 후 RoomDoorAnchor 컴포넌트를 붙이기
 - 방향 설정
 - Width 설정
-- 이름 설정 (예시: DoorAnchor_E)
+- 이름 설정 (예시: RoomDoorAnchor_E)
 
 TilemapCopier
 - 자동으로 Tilemap_Collision을 채워주는 에디터 함수
@@ -40,8 +40,11 @@ RoomPropPainter
    - 장식 세트별로 관리 → 여러 개 존재
    - 각 타일을 할당하고 세트에 맞게 Offset 조절하기
    - 스프라이트 이름 네이밍 규칙
-         - 이름 / 세트 번호 / 방향
-         - ex) PropGrass_Set01_Top, PropGrass_Set01_Bottom
+         - 이름 / 세트 번호 / 방향 / [충돌 표시 택...]
+         - ex) PropGrass_Set01_Top, PropGrass_Set01_Bottom_OB
+   - RoomPropPattern 이름 네이밍 규칙
+         - 스크립트 이름 / 이름 / 세트 번호 / [반전 택...] / [충돌 표시 택...]
+         - ex) RoomPropPattern_Rocks_Set02_FlipX_OB
 - RoomThemeDB
    - 장식할 패턴(RoomPropPattern)들을 테마별로 중앙 관리 → 1개만 존재
    - 테마를 설정하고 각 방을 장식할 패턴(RoomPropPattern)들을 할당

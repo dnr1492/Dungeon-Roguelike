@@ -27,5 +27,5 @@ MonoBehaviour:
     tile: {fileID: 11400000, guid: 02567aa275a2f6f459b2c6822f2782e7, type: 2}
     obstacle: 0
   allowRotate90: 0
-  allowMirrorX: 1
+  allowMirrorX: 0
   allowMirrorY: 0

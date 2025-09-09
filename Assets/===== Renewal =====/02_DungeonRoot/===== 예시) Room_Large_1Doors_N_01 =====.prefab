@@ -7514,7 +7514,7 @@ GameObject:
   - component: {fileID: 1294045958362800594}
   - component: {fileID: 6419677509728066405}
   m_Layer: 0
-  m_Name: DoorAnchor_N
+  m_Name: RoomDoorAnchor_N
   m_TagString: Untagged
   m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0

@@ -96,13 +96,17 @@ public class RoomPropPainter : MonoBehaviour
                 placed++;
         }
 
+        //타일 갱신
         propsMap.RefreshAllTiles();
-        if (collisionMap)
-        {
-            collisionMap.RefreshAllTiles();
-            var tmc = collisionMap.GetComponent<TilemapCollider2D>();
-            if (tmc) tmc.ProcessTilemapChanges();
-        }
+        collisionMap.RefreshAllTiles();
+
+        //콜라이더 자동 재생성
+        //Manual 설정에서도 런타임 자동 갱신
+        var tmc = collisionMap.GetComponent<TilemapCollider2D>();
+        if (tmc) tmc.ProcessTilemapChanges();
+        var comp = collisionMap ? collisionMap.GetComponent<CompositeCollider2D>() : null;
+        if (comp != null) comp.GenerateGeometry();
+        Physics2D.SyncTransforms();
     }
 
     private List<Vector3Int> CollectCandidateCells(Grid dungeonGrid, List<Vector3Int> doorCentersWorld)
@@ -171,23 +175,37 @@ public class RoomPropPainter : MonoBehaviour
             targets.Add((dest, c));
         }
 
-        foreach (var t in targets)
+        foreach (var (cell, def) in targets)
         {
-            if (avoidBaseHoles && !baseMap.HasTile(t.cell)) return false;
-            if (propsMap.HasTile(t.cell)) return false;
-            if (reserved.Contains(t.cell)) return false;
-            if (IsNearWall(t.cell, minDistanceFromWall)) return false;
-            if (HasCollisionInRadius(t.cell, avoidNearCollisionRadius)) return false;
-            if (collisionMap && collisionMap.HasTile(t.cell)) return false;
-            if (HasReservedInRadius(t.cell, minDistanceBetweenProps)) return false;
+            if (avoidBaseHoles && !baseMap.HasTile(cell)) return false;
+            if (propsMap.HasTile(cell)) return false;
+            if (reserved.Contains(cell)) return false;
+            if (IsNearWall(cell, minDistanceFromWall)) return false;
+            if (HasCollisionInRadius(cell, avoidNearCollisionRadius)) return false;
+            if (collisionMap && collisionMap.HasTile(cell)) return false;
+            if (HasReservedInRadius(cell, minDistanceBetweenProps)) return false;
         }
 
-        foreach (var t in targets)
+        foreach (var (cell, def) in targets)
         {
-            if (t.def.tile) propsMap.SetTile(t.cell, t.def.tile);
-            if (t.def.obstacle && collisionMap) collisionMap.SetTile(t.cell, collisionTile);
-            reserved.Add(t.cell);
+            if (def.tile) propsMap.SetTile(cell, def.tile);
+
+            var pivot = Vector3.zero;
+            var S = new Vector3(mx ? -1f : 1f, my ? -1f : 1f, 1f);
+            float angle = rot * 90f;
+
+            var M =
+                Matrix4x4.TRS(pivot, Quaternion.Euler(0, 0, angle), Vector3.one) *
+                Matrix4x4.Scale(S);
+
+            propsMap.SetTransformMatrix(cell, M);
+
+            if (def.obstacle && collisionMap)
+                collisionMap.SetTile(cell, collisionTile);
+
+            reserved.Add(cell);
         }
+
         return true;
     }
 

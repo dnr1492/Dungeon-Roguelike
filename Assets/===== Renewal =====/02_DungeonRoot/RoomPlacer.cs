@@ -13,7 +13,7 @@ public class PlacedRoom
 public class PlacedDoor
 {
     public PlacedRoom room;
-    public DoorAnchor anchor;  //방향/폭 정보용
+    public RoomDoorAnchor anchor;  //방향/폭 정보용
     public Vector3Int worldTile;  //문 중앙 타일 (전역 그리드 기준)
     public bool used;
 }
@@ -36,7 +36,7 @@ public struct QuotaMeta
 }
 
 /// <summary>
-/// 프리팹에 붙은 DoorAnchor를 읽어서
+/// 프리팹에 붙은 RoomDoorAnchor를 읽어서
 /// - 시작방을 배치하고
 /// - 기존 방의 '미사용 도어'와 새 방의 '호환 도어(폭 동일 + 반대방향)'를 찾아
 /// - 새 방을 정확히 맞닿도록 원점을 계산해 배치한다.
@@ -159,11 +159,11 @@ public class RoomPlacer : MonoBehaviour
             try
             {
                 preview = Instantiate(newRoomPrefab);
-                var newAnchors = preview.GetComponentsInChildren<DoorAnchor>(true);
+                var newAnchors = preview.GetComponentsInChildren<RoomDoorAnchor>(true);
 
                 var candidates = newAnchors.Where(b =>
                     b.width == a.anchor.width &&
-                    DoorAnchor.Opposite(a.anchor.direction) == b.direction);
+                    RoomDoorAnchor.Opposite(a.anchor.direction) == b.direction);
 
                 foreach (var b in candidates)
                 {
@@ -250,7 +250,7 @@ public class RoomPlacer : MonoBehaviour
         return false;
     }
 
-    //새 방을 origin에 배치하고 DoorAnchor들을 스캔하여 worldTile을 계산
+    //새 방을 origin에 배치하고 RoomDoorAnchor들을 스캔하여 worldTile을 계산
     private PlacedRoom PlaceRoomAt(GameObject prefab, Vector3Int origin)
     {
         var inst = Instantiate(prefab, roomsRoot);
@@ -269,11 +269,11 @@ public class RoomPlacer : MonoBehaviour
         return pr;
     }
 
-    //배치된 방의 DoorAnchor들로 PlacedDoor 목록을 다시 구성
+    //배치된 방의 RoomDoorAnchor들로 PlacedDoor 목록을 다시 구성
     private void RebuildPlacedDoors(PlacedRoom pr)
     {
         pr.doors.Clear();
-        var anchors = pr.go.GetComponentsInChildren<DoorAnchor>(true);
+        var anchors = pr.go.GetComponentsInChildren<RoomDoorAnchor>(true);
         foreach (var a in anchors)
         {
             var worldCenter = a.GetWorldCenter();

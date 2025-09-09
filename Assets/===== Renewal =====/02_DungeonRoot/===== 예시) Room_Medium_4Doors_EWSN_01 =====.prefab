@@ -8202,6 +8202,7 @@ MonoBehaviour:
   collisionMap: {fileID: 313847377265288934}
   propsMap: {fileID: 313847377324706298}
   collisionTile: {fileID: 11400000, guid: 81a1055dd1b0a02468f440cc30762d2f, type: 2}
+  placeCountRange: {x: 6, y: 14}
   profile: 0
   placeCountRangeOverride: {x: 0, y: 0}
 --- !u!1 &5299074499643473670
@@ -8215,7 +8216,7 @@ GameObject:
   - component: {fileID: 5299074499643473669}
   - component: {fileID: 5299074499643473668}
   m_Layer: 0
-  m_Name: DoorAnchor_S
+  m_Name: RoomDoorAnchor_S
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8264,7 +8265,7 @@ GameObject:
   - component: {fileID: 5299074499673162521}
   - component: {fileID: 5299074499673162520}
   m_Layer: 0
-  m_Name: DoorAnchor_N
+  m_Name: RoomDoorAnchor_N
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8313,7 +8314,7 @@ GameObject:
   - component: {fileID: 5299074500454798652}
   - component: {fileID: 5299074500454798651}
   m_Layer: 0
-  m_Name: DoorAnchor_W
+  m_Name: RoomDoorAnchor_W
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8530,7 +8531,7 @@ GameObject:
   - component: {fileID: 5299074501380930729}
   - component: {fileID: 5299074501380930728}
   m_Layer: 0
-  m_Name: DoorAnchor_E
+  m_Name: RoomDoorAnchor_E
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

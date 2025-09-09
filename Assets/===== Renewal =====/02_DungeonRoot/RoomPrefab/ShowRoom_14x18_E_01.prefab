@@ -3992,6 +3992,7 @@ MonoBehaviour:
   collisionMap: {fileID: 7318081951390998117}
   propsMap: {fileID: 2709675707429369759}
   collisionTile: {fileID: 11400000, guid: 81a1055dd1b0a02468f440cc30762d2f, type: 2}
+  placeCountRange: {x: 6, y: 14}
   profile: 0
   placeCountRangeOverride: {x: 0, y: 0}
 --- !u!1 &5276389986312635764
@@ -4005,7 +4006,7 @@ GameObject:
   - component: {fileID: 1118739701131315417}
   - component: {fileID: 2808456636714054971}
   m_Layer: 0
-  m_Name: DoorAnchor_E
+  m_Name: RoomDoorAnchor_E
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
