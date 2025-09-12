@@ -9,10 +9,10 @@ public class RoomCorridorPainter : MonoBehaviour
     [SerializeField] Tilemap collisionMap;    //충돌 전용
 
     [SerializeField] TileBase floorTile;      //바닥 타일
-    [SerializeField] TileBase wallTile;       //벽 타일
+    [SerializeField] TileBase doorWallTile;   //문 벽 타일
     [SerializeField] TileBase collisionTile;  //충돌 타일
 
-    //방향별 벽 타일(미지정 시 기본 wallTile 사용)
+    //방향별 벽 타일
     [SerializeField] TileBase wallTileUp;
     [SerializeField] TileBase wallTileDown;
     [SerializeField] TileBase wallTileLeft;
@@ -105,7 +105,8 @@ public class RoomCorridorPainter : MonoBehaviour
     //방향별로 벽/충돌을 찍는 헬퍼
     private void PlaceWallDirectional(Vector2Int pos, string dir)
     {
-        TileBase use = wallTile;
+        TileBase use = null;
+
         if (dir == "Up" && wallTileUp) use = wallTileUp;
         if (dir == "Down" && wallTileDown) use = wallTileDown;
         if (dir == "Left" && wallTileLeft) use = wallTileLeft;
@@ -152,7 +153,7 @@ public class RoomCorridorPainter : MonoBehaviour
             {
                 if (wallMap)
                 {
-                    var use = wallTile ?? (dir == DoorDir.North ? wallTileUp :
+                    var use = doorWallTile != null ? doorWallTile : (dir == DoorDir.North ? wallTileUp :
                                            dir == DoorDir.South ? wallTileDown :
                                            dir == DoorDir.East ? wallTileRight :
                                                                   wallTileLeft);
@@ -187,5 +188,38 @@ public class RoomCorridorPainter : MonoBehaviour
             foreach (int o in Offsets(width))
                 yield return new Vector3Int(x, doorCenter.y + o, 0);
         }
+    }
+
+    //방의 Tilemap_Walls에 벽 + 충돌 생성, 바닥 제거
+    public void SetWall(Tilemap roomWallsMap, Vector2Int centerWorld, DoorDir dir, int width)
+    {
+        if (!roomWallsMap)
+        {
+            Finish(); return;
+        }
+
+        string key = (dir == DoorDir.North) ? "Up"
+                   : (dir == DoorDir.South) ? "Down"
+                   : (dir == DoorDir.East) ? "Right" : "Left";
+
+        TileBase useDirWall = null;
+
+        if (key == "Up" && wallTileUp) useDirWall = wallTileUp;
+        if (key == "Down" && wallTileDown) useDirWall = wallTileDown;
+        if (key == "Left" && wallTileLeft) useDirWall = wallTileLeft;
+        if (key == "Right" && wallTileRight) useDirWall = wallTileRight;
+
+        foreach (var worldCell in GateLineCells(centerWorld, dir, width))
+        {
+            //전역셀 → 월드 → 방 로컬셀 변환 (로컬에 정확히 찍기)
+            Vector3 worldPos = baseMap ? baseMap.CellToWorld(worldCell) : worldCell;
+            Vector3Int localCell = roomWallsMap.WorldToCell(worldPos);
+
+            if (baseMap) baseMap.SetTile(worldCell, null);                                      //전역 바닥 제거
+            if (roomWallsMap && useDirWall) roomWallsMap.SetTile(localCell, useDirWall);        //로컬(방) Tilemap_Walls에 벽 생성
+            if (collisionMap && collisionTile) collisionMap.SetTile(worldCell, collisionTile);  //전역 충돌
+        }
+
+        Finish();
     }
 }

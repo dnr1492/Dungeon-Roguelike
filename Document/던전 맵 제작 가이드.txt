@@ -5,28 +5,28 @@
 
 DungeonRoot: 복도 등 방 외의 맵 / 방 프리팹의 부모
 
-RoomPrefab Layer (절차적 맵 생성을 위한 방 프리팹)
-- Tilemap_Base: 바닥/기본 타일
-- Tilemap_Walls: 벽 타일
-- Tilemap_Collision: 보이지 않는 충돌 타일. 즉, 충돌 효과를 적용할 Tile을 동일하게 미러링해서 그리기
-- Tilemap_Props: 장식/프롭
-- Tilemap_Decals: 물자국/그림자/데칼
-
-RoomPrefab Tag
-- CombatRoom, BoosRoom, EliteRoom, ShowRoom, EventRoom 중 택1 설정
-- CombatRoom, BoosRoom, EliteRoom: 게이트 열고 닫히는 이벤트 존재
-- 그 외 방은 패스
-- *Player에 'Player' Tag 및 Collider2D, Rigidbody2D가 필수
-
-RoomPrefab 이름 네이밍 규칙
-- 이름 / 사이즈 / 문 방향 / 변형 번호
-- ex) ShowRoom_12x16_E_01
-
-RoomPrefab 문 규칙
-- 게임 오브젝트를 문 개수만큼 생성해서 해당 좌표의 중간에 배치 후 RoomDoorAnchor 컴포넌트를 붙이기
-- 방향 설정
-- Width 설정
-- 이름 설정 (예시: RoomDoorAnchor_E)
+RoomPrefab 
+- Layer (절차적 맵 생성을 위한 방 프리팹)
+	- Tilemap_Base: 바닥/기본 타일
+	- Tilemap_Walls: 벽 타일
+	- Tilemap_Collision: 보이지 않는 충돌 타일. 즉, 충돌 효과를 적용할 Tile을 동일하게 미러링해서 그리기
+	- Tilemap_Props: 장식/프롭
+	- Tilemap_Decals: 물자국/그림자/데칼
+- Tag
+	- CombatRoom, BoosRoom, EliteRoom, ShopRoom, EventRoom 중 택1 설정
+	- CombatRoom, BoosRoom, EliteRoom: 게이트 열고 닫히는 이벤트 존재
+	- 그 외 방은 패스
+	- *Player에 'Player' Tag 및 Collider2D, Rigidbody2D가 필수
+- Name 규칙
+	- 이름 / 사이즈 / 문 방향 / 변형 번호
+	- ex) ShopRoom_12x16_E_01
+- Door 규칙
+	- 게임 오브젝트를 문 개수만큼 생성해서 해당 좌표의 중간에 배치 후 RoomDoorAnchor 컴포넌트를 붙이기
+	- 방향 설정
+	- Width 설정
+	- 이름 설정 (예시: RoomDoorAnchor_E)
+- 생성 Tip
+	- 현재 모든(4) 방향의 RoomPrefab 한 개만 생성해도 됨
 
 TilemapCopier
 - 자동으로 Tilemap_Collision을 채워주는 에디터 함수
@@ -37,18 +37,18 @@ TilemapCopier
 RoomPropPainter
 - 방 프리팹에 게임 오브젝트를 생성 후 스크립트를 할당
 - RoomPropPattern
-   - 장식 세트별로 관리 → 여러 개 존재
-   - 각 타일을 할당하고 세트에 맞게 Offset 조절하기
-   - 스프라이트 이름 네이밍 규칙
-         - 이름 / 세트 번호 / 방향 / [충돌 표시 택...]
-         - ex) PropGrass_Set01_Top, PropGrass_Set01_Bottom_OB
-   - RoomPropPattern 이름 네이밍 규칙
-         - 스크립트 이름 / 이름 / 세트 번호 / [반전 택...] / [충돌 표시 택...]
-         - ex) RoomPropPattern_Rocks_Set02_FlipX_OB
-- RoomThemeDB
-   - 장식할 패턴(RoomPropPattern)들을 테마별로 중앙 관리 → 1개만 존재
-   - 테마를 설정하고 각 방을 장식할 패턴(RoomPropPattern)들을 할당
-   - Overrides에서 특정 방만의 장식 패턴을 할당 가능 → RoomPropPainter에서 "Per-Room Profile"를 적용
+	- 장식 세트별로 관리 → 여러 개 존재
+	- 각 타일을 할당하고 세트에 맞게 Offset 조절하기
+	- 스프라이트 이름 네이밍 규칙
+		- 이름 / 세트 번호 / 방향 / [충돌 표시 택...]
+		- ex) PropGrass_Set01_Top, PropGrass_Set01_Bottom_OB
+	- RoomPropPattern 이름 네이밍 규칙
+		- 스크립트 이름 / 이름 / 세트 번호 / [반전 택...] / [충돌 표시 택...]
+		- ex) RoomPropPattern_Rocks_Set02_FlipX_OB
+- RoomPropThemeDB
+	- 장식할 패턴(RoomPropPattern)들을 테마별로 중앙 관리 → 1개만 존재
+	- 테마를 설정하고 각 방을 장식할 패턴(RoomPropPattern)들을 할당
+	- Overrides에서 특정 방만의 장식 패턴을 할당 가능 → RoomPropPainter에서 "Per-Room Profile"를 적용
 
 Sorting Layers
 - Background: 가장 뒤 배경 (ex) 동굴 안의 검은 배경, 먼 배경 산, 벽 뒤 어둠)

@@ -559,14 +559,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dungeonGrid: {fileID: 2035399249}
   roomsRoot: {fileID: 95032989}
-  startRoomPrefab: {fileID: 313847376638219695, guid: 59b55cebc754404408c09a655ea28322, type: 3}
+  startRoomPrefab: {fileID: 5923029633780073221, guid: 361d5dfbce8c91244bf99d6774cf6a9c, type: 3}
   candidateRooms:
-  - {fileID: 313847376638219695, guid: 59b55cebc754404408c09a655ea28322, type: 3}
-  - {fileID: 1294045957282782753, guid: e25aa54e87c4d7a41bafb32152ef293e, type: 3}
-  - {fileID: 2289187546983520195, guid: 26603b1b49d96694095a31d0370fbbb5, type: 3}
-  - {fileID: 3497569018091457747, guid: 518dc6d1937ed404d825a18a1dfb5380, type: 3}
-  - {fileID: 8290052053446302510, guid: eb5ed75e16fd50d4783d5fca6f116cce, type: 3}
-  - {fileID: 1827612387891327277, guid: 575a781f55479af45b56f41e9b9321c7, type: 3}
+  - {fileID: 626229004849445000, guid: 85bb34d78b0c54c4f9c8dfad1e8b8c62, type: 3}
+  - {fileID: 5923029633780073221, guid: 361d5dfbce8c91244bf99d6774cf6a9c, type: 3}
+  - {fileID: 4072264236838237545, guid: bb6f47047d547e54985445e7a7ae4501, type: 3}
+  - {fileID: 7088887703923375739, guid: 444ef4827feb39f42ae52ca6c78fe882, type: 3}
+  - {fileID: 8413316470662871266, guid: ebb36aeeaf2021c4d9a98b95ded11199, type: 3}
   painter: {fileID: 1488829417}
   themeDB: {fileID: 11400000, guid: ffb445abd58dc424ea8734f06d2c8c52, type: 2}
 --- !u!4 &855642871
@@ -617,7 +616,7 @@ MonoBehaviour:
   wallMap: {fileID: 828786261}
   collisionMap: {fileID: 426301334}
   floorTile: {fileID: 11400000, guid: 73b12a4134e1e3a428e4bd8b1db27c8c, type: 2}
-  wallTile: {fileID: 11400000, guid: e3ca13a3ac597234c9bf80f03bfe5d0c, type: 2}
+  doorWallTile: {fileID: 11400000, guid: e3ca13a3ac597234c9bf80f03bfe5d0c, type: 2}
   collisionTile: {fileID: 11400000, guid: 81a1055dd1b0a02468f440cc30762d2f, type: 2}
   wallTileUp: {fileID: 11400000, guid: 760cf61ea32836542bba48bdaac291f8, type: 2}
   wallTileDown: {fileID: 11400000, guid: d271391bcef60b34db33b6702a070b0b, type: 2}
@@ -716,6 +715,86 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1910000596
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1910000599}
+  - component: {fileID: 1910000598}
+  - component: {fileID: 1910000597}
+  m_Layer: 0
+  m_Name: ===== TempPlayer =====
+  m_TagString: Player
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!50 &1910000597
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1910000596}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!61 &1910000598
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1910000596}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 2, y: 2}
+  m_EdgeRadius: 0
+--- !u!4 &1910000599
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1910000596}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1982261327
 GameObject:

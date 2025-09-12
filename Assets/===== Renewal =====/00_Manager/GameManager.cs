@@ -32,11 +32,17 @@ public class GameManager : MonoBehaviour
     {
         defaultMeta = new QuotaMeta
         {
-            combatRooms = new QuotaRange { min = 3, max = 5 },
-            eliteRooms = new QuotaRange { min = 1, max = 3 },
+            //combatRooms = new QuotaRange { min = 5, max = 5 },
+            //eliteRooms = new QuotaRange { min = 2, max = 2 },
+            //bossRooms = 1,
+            //shopRooms = new QuotaRange { min = 1, max = 1 },
+            //eventRooms = new QuotaRange { min = 1, max = 2 },
+
+            combatRooms = new QuotaRange { min = 20, max = 20 },
+            eliteRooms = new QuotaRange { min = 2, max = 2 },
             bossRooms = 1,
-            shopRooms = new QuotaRange { min = 1, max = 1 },
-            eventRooms = new QuotaRange { min = 2, max = 3 },
+            shopRooms = new QuotaRange { min = 2, max = 3 },
+            eventRooms = new QuotaRange { min = 3, max = 4 },
         };
 
         if (!placer)

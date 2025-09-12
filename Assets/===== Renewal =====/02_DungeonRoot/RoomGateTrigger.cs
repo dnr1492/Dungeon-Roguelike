@@ -45,7 +45,7 @@ public class RoomGateTrigger : MonoBehaviour
         Vector3 localSize3 = transform.InverseTransformVector(worldBounds.size);
         Vector2 localSize = new(Mathf.Abs(localSize3.x), Mathf.Abs(localSize3.y));
 
-        bc.offset = (Vector2)localCenter3;
+        bc.offset = localCenter3;
         bc.size = localSize;
 
         //'씬 루트'가 아니라 현재 방 루트로 캐시

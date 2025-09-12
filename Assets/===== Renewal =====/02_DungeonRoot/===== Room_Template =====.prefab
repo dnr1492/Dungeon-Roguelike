@@ -228,7 +228,7 @@ GameObject:
   - component: {fileID: 537009023466332094}
   - component: {fileID: 7240080937962861826}
   m_Layer: 0
-  m_Name: RoomPropPainter
+  m_Name: === RoomPropPainter_Template ===
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
