@@ -115,20 +115,20 @@ public class RoomPlacer : MonoBehaviour
 
         var remain = new Dictionary<string, int>
         {
-            { Roomkind.CombatRoom.ToString(), SampleInRange(meta.combatRooms) },
-            { Roomkind.EliteRoom.ToString(),  SampleInRange(meta.eliteRooms)  },
-            { Roomkind.EventRoom.ToString(),  SampleInRange(meta.eventRooms)  },
-            { Roomkind.ShopRoom.ToString(),   SampleInRange(meta.shopRooms)   },
-            { Roomkind.BossRoom.ToString(),   Mathf.Max(0, meta.bossRooms)    },
+            { ConstClass.Tags.CombatRoom, SampleInRange(meta.combatRooms) },
+            { ConstClass.Tags.EliteRoom,  SampleInRange(meta.eliteRooms)  },
+            { ConstClass.Tags.EventRoom,  SampleInRange(meta.eventRooms)  },
+            { ConstClass.Tags.ShopRoom,   SampleInRange(meta.shopRooms)   },
+            { ConstClass.Tags.BossRoom,   Mathf.Max(0, meta.bossRooms)    },
         };
 
         var pool = new Dictionary<string, List<GameObject>>
         {
-            { Roomkind.CombatRoom.ToString(), FilterCandidatesByTag(Roomkind.CombatRoom.ToString()) },
-            { Roomkind.EliteRoom.ToString(),  FilterCandidatesByTag(Roomkind.EliteRoom.ToString())  },
-            { Roomkind.EventRoom.ToString(),  FilterCandidatesByTag(Roomkind.EventRoom.ToString())  },
-            { Roomkind.ShopRoom.ToString(),   FilterCandidatesByTag(Roomkind.ShopRoom.ToString())   },
-            { Roomkind.BossRoom.ToString(),   FilterCandidatesByTag(Roomkind.BossRoom.ToString())   },
+            { ConstClass.Tags.CombatRoom, FilterCandidatesByTag(ConstClass.Tags.CombatRoom) },
+            { ConstClass.Tags.EliteRoom,  FilterCandidatesByTag(ConstClass.Tags.EliteRoom)  },
+            { ConstClass.Tags.EventRoom,  FilterCandidatesByTag(ConstClass.Tags.EventRoom)  },
+            { ConstClass.Tags.ShopRoom,   FilterCandidatesByTag(ConstClass.Tags.ShopRoom)   },
+            { ConstClass.Tags.BossRoom,   FilterCandidatesByTag(ConstClass.Tags.BossRoom)   },
         };
 
         var q = new Queue<PlacedDoor>();
@@ -195,11 +195,11 @@ public class RoomPlacer : MonoBehaviour
                     var prefab = prefabs[Random.Range(0, prefabs.Count)];
                     int candDepth = a.room.depth + 1;
 
-                    if ((tag == Roomkind.ShopRoom.ToString() && candDepth < shopMinDepthFromStart) ||
-                        (tag == Roomkind.EventRoom.ToString() && candDepth < eventMinDepthFromStart))
+                    if ((tag == ConstClass.Tags.ShopRoom && candDepth < shopMinDepthFromStart) ||
+                        (tag == ConstClass.Tags.EventRoom && candDepth < eventMinDepthFromStart))
                         continue;
 
-                    if ((tag == Roomkind.EventRoom.ToString() || tag == Roomkind.ShopRoom.ToString()) &&
+                    if ((tag == ConstClass.Tags.EventRoom || tag == ConstClass.Tags.ShopRoom) &&
                         ViolatesSameTypeWithin2(a.room, tag))
                         continue;
 
@@ -213,7 +213,7 @@ public class RoomPlacer : MonoBehaviour
                         AddGraphEdge(a.room, newRoom);
 
                         var newDoors = newRoom.doors.Where(d => !d.used).ToList();
-                        if (tag == Roomkind.EventRoom.ToString() && newDoors.Count > 0)
+                        if (tag == ConstClass.Tags.EventRoom && newDoors.Count > 0)
                         {
                             var rest = q.ToArray(); q.Clear();
                             foreach (var nd in newDoors) q.Enqueue(nd);
@@ -284,7 +284,7 @@ public class RoomPlacer : MonoBehaviour
     {
         if (candTypes == null || candTypes.Count == 0) return;
 
-        string COMBAT = Roomkind.CombatRoom.ToString();
+        string COMBAT = ConstClass.Tags.CombatRoom;
         if (consecutiveCombat >= combatRunLimit && candTypes.Contains(COMBAT))
         {
             bool hasAlt = candTypes.Any(t => t != COMBAT && remain.TryGetValue(t, out var r) && r > 0);
@@ -294,8 +294,8 @@ public class RoomPlacer : MonoBehaviour
         bool justPlacedSpecial = (placeStep - lastSpecialStep) <= 1;
         if (justPlacedSpecial && Random.value < Mathf.Clamp01(specialBackoffProb))
         {
-            string SHOP = Roomkind.ShopRoom.ToString();
-            string EVENT = Roomkind.EventRoom.ToString();
+            string SHOP = ConstClass.Tags.ShopRoom;
+            string EVENT = ConstClass.Tags.EventRoom;
 
             if (lastPlacedTag == SHOP && candTypes.Contains(EVENT))
             {
@@ -370,8 +370,8 @@ public class RoomPlacer : MonoBehaviour
 
                 int candDepth = a.room.depth + 1;
 
-                if ((prefab.CompareTag(Roomkind.ShopRoom.ToString()) && candDepth < shopMinDepthFromStart) ||
-                    (prefab.CompareTag(Roomkind.EventRoom.ToString()) && candDepth < eventMinDepthFromStart))
+                if ((prefab.CompareTag(ConstClass.Tags.ShopRoom) && candDepth < shopMinDepthFromStart) ||
+                    (prefab.CompareTag(ConstClass.Tags.EventRoom) && candDepth < eventMinDepthFromStart))
                     continue;
 
                 var placedRoom = PlaceRoomAt(prefab, finalOrigin, candDepth);
@@ -409,10 +409,10 @@ public class RoomPlacer : MonoBehaviour
                 placeStep++;
                 lastPlacedTag = prefab.tag;
 
-                if (lastPlacedTag == Roomkind.CombatRoom.ToString()) consecutiveCombat++;
+                if (lastPlacedTag == ConstClass.Tags.CombatRoom) consecutiveCombat++;
                 else consecutiveCombat = 0;
 
-                if (lastPlacedTag == Roomkind.ShopRoom.ToString() || lastPlacedTag == Roomkind.EventRoom.ToString())
+                if (lastPlacedTag == ConstClass.Tags.ShopRoom || lastPlacedTag == ConstClass.Tags.EventRoom)
                     lastSpecialStep = placeStep;
 
                 return true;
@@ -636,8 +636,8 @@ public class RoomPlacer : MonoBehaviour
     }
     #endregion
 
-    #region 방 인스턴스 생성, 도어/점유 셀 재구성, 도어 락/언락, 룸 찾기
-    //프리팹을 전역 그리드 원점에 배치하고 도어/셀/장식 세팅
+    #region 방 인스턴스 생성, 도어/점유 셀 재구성, Encounter 스폰, 도어 락/언락, 룸 찾기
+    //프리팹을 전역 그리드 원점에 배치하고 도어/셀/장식 세팅 + Encounter 스폰
     private PlacedRoom PlaceRoomAt(GameObject prefab, Vector3Int origin, int depth)
     {
         var inst = Instantiate(prefab, roomsRoot);
@@ -651,6 +651,9 @@ public class RoomPlacer : MonoBehaviour
         foreach (var c in pr.cells) occupied.Add(c);
 
         TryPaintPropsForRoomConditional(pr);
+
+        var roomEncounter = inst.GetComponentInChildren<RoomEncounter>();
+        roomEncounter.SeedEnemies(pr, dungeonGrid);
         return pr;
     }
 
@@ -731,8 +734,8 @@ public class RoomPlacer : MonoBehaviour
     private bool IsAutoDecorTarget(GameObject roomRoot)
     {
         if (!roomRoot) return false;
-        if (roomRoot.CompareTag(Roomkind.CombatRoom.ToString())) return true;
-        if (roomRoot.CompareTag(Roomkind.EliteRoom.ToString())) return true;
+        if (roomRoot.CompareTag(ConstClass.Tags.CombatRoom)) return true;
+        if (roomRoot.CompareTag(ConstClass.Tags.EliteRoom)) return true;
         return false;
     }
     #endregion

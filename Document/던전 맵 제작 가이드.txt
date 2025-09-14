@@ -9,7 +9,7 @@ RoomPrefab
 - Layer (절차적 맵 생성을 위한 방 프리팹)
 	- Tilemap_Base: 바닥/기본 타일
 	- Tilemap_Walls: 벽 타일
-	- Tilemap_Collision: 보이지 않는 충돌 타일. 즉, 충돌 효과를 적용할 Tile을 동일하게 미러링해서 그리기
+	- Tilemap_Collision: 보이지 않는 충돌 타일. 즉, 충돌 효과를 적용할 Tile을 동일하게 미러링해서 그리기 (feat. Layer를 "Wall"로 설정)
 	- Tilemap_Props: 장식/프롭
 	- Tilemap_Decals: 물자국/그림자/데칼
 - Tag
@@ -49,6 +49,10 @@ RoomPropPainter
 	- 장식할 패턴(RoomPropPattern)들을 테마별로 중앙 관리 → 1개만 존재
 	- 테마를 설정하고 각 방을 장식할 패턴(RoomPropPattern)들을 할당
 	- Overrides에서 특정 방만의 장식 패턴을 할당 가능 → RoomPropPainter에서 "Per-Room Profile"를 적용
+
+RoomEncounter
+- 방에서 생성할 Enemy 프리팹을 Pool에 할당
+- Enemy 수를 설정
 
 Sorting Layers
 - Background: 가장 뒤 배경 (ex) 동굴 안의 검은 배경, 먼 배경 산, 벽 뒤 어둠)

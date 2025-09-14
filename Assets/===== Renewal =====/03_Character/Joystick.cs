@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 public enum AxisOptions { Both, Horizontal, Vertical }
@@ -21,7 +19,7 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
         get { return deadZone; }
         set { deadZone = Mathf.Abs(value); }
     }
-    public AxisOptions AxisOptions { get { return AxisOptions; } set { axisOptions = value; } }
+    public AxisOptions AxisOptions { get { return axisOptions; } set { axisOptions = value; } }
     public bool SnapX { get { return snapX; } set { snapX = value; } }
     public bool SnapY { get { return snapY; } set { snapY = value; } }
 
@@ -76,8 +74,14 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     protected virtual void HandleInput(float magnitude, Vector2 normalised, Vector2 radius, Camera cam)
     {
-        if (magnitude > deadZone) if (magnitude > 1) input = normalised;
-        else input = Vector2.zero;
+        if (magnitude <= deadZone)
+        {
+            input = Vector2.zero;
+            return;
+        }
+
+        if (magnitude > 1f) input = normalised;
+        else input = normalised * magnitude;
     }
 
     private void FormatInput()

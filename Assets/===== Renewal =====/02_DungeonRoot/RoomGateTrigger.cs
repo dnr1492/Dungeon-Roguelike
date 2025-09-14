@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -8,14 +9,13 @@ public class RoomGateTrigger : MonoBehaviour
     [SerializeField] Grid grid;
     [SerializeField] Tilemap baseMap;
     
-    private readonly string playerTag = "Player";
-    private readonly string[] combatRoomTags = new[] { Roomkind.CombatRoom.ToString(), Roomkind.EliteRoom.ToString(), Roomkind.BossRoom.ToString() };  //전투 방으로 판정할 태그 (게이트를 열고/닫는 이벤트용 Tag)
+    private readonly string[] combatRoomTags = new[] { ConstClass.Tags.CombatRoom, ConstClass.Tags.EliteRoom, ConstClass.Tags.BossRoom };  //전투 방으로 판정할 태그 (게이트를 열고/닫는 이벤트용 Tag)
     private readonly bool closeWhenSteppedInside = true;  //방 내부 entryDepthCells 칸 수만큼 밟았을 때만 문 닫기
     private readonly int entryDepthCells = 1;   //내부 감지 깊이(타일 수)
 
+    private Character enteredCharacter;  //방에 들어온 캐릭터
     private RoomPlacer placer;
     private bool lockedOnce;
-    private PlacedRoom myRoom;  //내가 속한 배치 방 캐시
 
     private void Start()
     {
@@ -47,10 +47,6 @@ public class RoomGateTrigger : MonoBehaviour
 
         bc.offset = localCenter3;
         bc.size = localSize;
-
-        //'씬 루트'가 아니라 현재 방 루트로 캐시
-        var roomRootGO = GetRoomRootGO();
-        if (placer != null) myRoom = placer.FindPlacedRoomByInstance(roomRootGO);
     }
 
     //'현재 방 루트' 하위에서만 타일맵 경계를 합산
@@ -77,18 +73,21 @@ public class RoomGateTrigger : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (!Application.isPlaying) return;
-        if (!other || !other.CompareTag(playerTag)) return;
+        if (!other) return;
+
+        var ch = other.GetComponentInParent<Character>();
+        if (!ch) return;  //플레이어만 통과
 
         //'안쪽 ~ 칸 닫기' 모드면 여기서는 닫지 않는다. (OnTriggerStay2D로 처리)
         if (closeWhenSteppedInside) return;
-
         if (lockedOnce) return;
 
         if (!placer) placer = FindObjectOfType<RoomPlacer>();
         if (!placer) return;
 
+        enteredCharacter = ch;
         lockedOnce = true;
-        HandleEnterRoom().Forget();
+        HandleEnterRoom();
     }
 
     private void OnTriggerStay2D(Collider2D other)
@@ -96,7 +95,10 @@ public class RoomGateTrigger : MonoBehaviour
         if (!Application.isPlaying) return;
         if (!closeWhenSteppedInside) return;
         if (lockedOnce) return;
-        if (!other || !other.CompareTag(playerTag)) return;
+        if (!other) return;
+
+        var ch = other.GetComponentInParent<Character>();
+        if (!ch) return;  //플레이어만 통과
 
         if (!placer) placer = FindObjectOfType<RoomPlacer>();
         if (!placer) return;
@@ -104,8 +106,9 @@ public class RoomGateTrigger : MonoBehaviour
         //플레이어가 방 경계로부터 'entryDepthCells' 이상 내부로 들어왔는 지 체크
         if (!IsSteppedInsideDepth(other.transform.position)) return;
 
+        enteredCharacter = ch;
         lockedOnce = true;
-        HandleEnterRoom().Forget();
+        HandleEnterRoom();
     }
 
     private bool IsSteppedInsideDepth(Vector3 playerWorldPos)
@@ -127,19 +130,18 @@ public class RoomGateTrigger : MonoBehaviour
                 playerWorldPos.y >= innerMin.y && playerWorldPos.y <= innerMax.y);
     }
 
-    private async UniTaskVoid HandleEnterRoom()
+    private void HandleEnterRoom()
     {
-        //전투 방 판정 — 전투 방이 아니면 아무 것도 하지 않음
+        //전투 방이 아니면 중단
         if (!IsCombatRoom()) return;
+        if (!TryGetRoomWorldBounds(out Bounds worldBounds)) return;
 
-        //현재 방만 잠금
-        if (placer != null && myRoom != null) placer.LockRoom(myRoom);
+        //현재 방 루트에서 Encounter 검색
+        var roomRoot = GetRoomRootGO();
+        var rommEncounter = roomRoot.GetComponentInChildren<RoomEncounter>();
 
-        // ===== TODO: '적 전멸' 이벤트로 교체 ===== //
-        await UniTask.Delay(3000); 
-
-        //현재 방만 해제
-        if (placer != null && myRoom != null) placer.UnlockRoom(myRoom);
+        //플레이어 전투 On
+        if (enteredCharacter) rommEncounter.OnPlayerEntered(enteredCharacter, worldBounds);
     }
 
     private bool IsCombatRoom()

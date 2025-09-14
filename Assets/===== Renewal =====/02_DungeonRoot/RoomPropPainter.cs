@@ -211,8 +211,8 @@ public class RoomPropPainter : MonoBehaviour
 
     private RoomPropPattern[] PickByTag(string tag, RoomPropPattern[] combat, RoomPropPattern[] elite)
     {
-        if (tag == Roomkind.CombatRoom.ToString()) return combat;
-        if (tag == Roomkind.EliteRoom.ToString()) return elite;
+        if (tag == ConstClass.Tags.CombatRoom) return combat;
+        if (tag == ConstClass.Tags.EliteRoom) return elite;
         return null;
     }
 

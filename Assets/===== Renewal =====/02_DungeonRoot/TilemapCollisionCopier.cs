@@ -6,8 +6,8 @@ using System;
 public class TilemapCollisionCopier : MonoBehaviour
 {
     [Header("Sources")]
-    public Tilemap walls;           //Walls ≈∏¿œ∏ 
-    public Tilemap props;           //Props ≈∏¿œ∏ 
+    public Tilemap walls;  //Walls ≈∏¿œ∏ 
+    public Tilemap props;  //Props ≈∏¿œ∏ 
 
     [Header("Target")]
     public Tilemap collision;       //Collision ≈∏¿œ∏ 

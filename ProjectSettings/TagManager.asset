@@ -4,14 +4,6 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - PlayerBody
-  - PlayerSensor
-  - Gun
-  - Knife
-  - Bullet
-  - Enemy
-  - MeleeAttack
-  - MonsterBody
   - CombatRoom
   - EliteRoom
   - BossRoom
@@ -26,13 +18,13 @@ TagManager:
   - UI
   - 
   - Player
-  - PlayerBody
-  - 
-  - LeftMeleeAttack
-  - RightMeleeAttack
-  - 
-  - Monster
   - MonsterBody
+  - Wall
+  - GateTrigger
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 
