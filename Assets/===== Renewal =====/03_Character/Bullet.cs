@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Rigidbody2D))]
@@ -8,26 +9,38 @@ public class Bullet : MonoBehaviour
     [SerializeField] Rigidbody2D rb;
     [SerializeField] CircleCollider2D col;
 
+    //총알 상태
     private float speed;
-    private float life;
+    private float life;  //0이하면 무한
     private int damage;
 
-    public void Init(float spd, float lifeTime, int dmg, float radius)
+    //풀 복귀 콜백
+    private Action<Bullet> onDespawn;  
+
+    public void Spawn(Vector3 pos, Quaternion rot, float spd, float lifeTime, float radius, int dmg, Action<Bullet> despawnCb)
     {
+        transform.SetPositionAndRotation(pos, rot);
         speed = spd;
         life = lifeTime;
         damage = dmg;
-        col.radius = radius;
+        onDespawn = despawnCb;
+
+        float sx = Mathf.Abs(transform.lossyScale.x);
+        col.radius = (sx > 0f) ? (radius / sx) : radius;
+
+        gameObject.SetActive(true);
     }
 
-    private void Update()
+    void Update()
     {
         float dt = Time.deltaTime;
+        transform.Translate(Vector3.right * speed * dt, Space.Self);
 
-        transform.Translate(dt * speed * Vector3.right, Space.Self);
-
-        life -= dt;
-        if (life <= 0f) Destroy(gameObject);
+        if (life > 0f)
+        {
+            life -= dt;
+            if (life <= 0f) Despawn();
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -37,7 +50,7 @@ public class Bullet : MonoBehaviour
         //벽: 즉시 소멸
         if ((bit & ConstClass.Masks.Wall) != 0)
         {
-            Destroy(gameObject);
+            Despawn();
             return;
         }
 
@@ -53,8 +66,23 @@ public class Bullet : MonoBehaviour
 #if UNITY_EDITOR
             Debug.Log($"[Hit] {other.name} -{damage}");
 #endif
-            Destroy(gameObject);
+            Despawn();
         }
+    }
+
+    private void Despawn()
+    {
+        var cb = onDespawn;
+        onDespawn = null;
+        if (cb != null) cb(this);
+        else gameObject.SetActive(false);
+    }
+
+    private void OnDisable()
+    {
+        //방어적인 코드: 비활성화될 때 이동/수명 상태 초기화 (재사용 시 안정)
+        //life/damage는 Spawn에서 매번 덮어씀
+        speed = 0f;
     }
 
     private void OnDrawGizmos()

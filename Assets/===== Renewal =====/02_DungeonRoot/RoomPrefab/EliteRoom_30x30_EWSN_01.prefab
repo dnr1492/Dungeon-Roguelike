@@ -364,11 +364,8 @@ MonoBehaviour:
   - {fileID: 8144346950983601911, guid: 6a445b5fe2751ba47b88caa002e3c2b1, type: 3}
   enemyPoolElite:
   - {fileID: 8144346950983601911, guid: 6a445b5fe2751ba47b88caa002e3c2b1, type: 3}
-  enemyCountRangeCombat: {x: 3, y: 6}
-  enemyCountRangeElite: {x: 2, y: 4}
-  minEnemyDistanceFromDoor: 2
-  minEnemyDistanceFromWall: 1
-  minEnemySpacing: 2
+  enemyCountRangeCombat: {x: 5, y: 10}
+  enemyCountRangeElite: {x: 10, y: 20}
 --- !u!1 &2207495933686863830
 GameObject:
   m_ObjectHideFlags: 0

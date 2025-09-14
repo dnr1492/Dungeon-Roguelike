@@ -41,7 +41,17 @@ public class Character : MonoBehaviour
 
     private bool fireHeld;     //버튼을 누르고 있는 중
     private bool firePressed;  //이번 프레임에 "딱 한 번" 눌림 (edge)
+
+    //총알 풀링
+    private readonly int BulletPrewarm = 30;
+    private readonly Queue<Bullet> bulletPool = new Queue<Bullet>(64);
+    private Transform bulletPoolRoot;
     #endregion
+
+    private void Awake()
+    {
+        CreateBullet();
+    }
 
     private void Update()
     {
@@ -160,7 +170,7 @@ public class Character : MonoBehaviour
     private Vector2 TargetPoint() => target ? target.position : transform.position;
     #endregion
 
-    #region 무기 발사
+    #region 무기 발사 (feat.풀링)
     //UI 바인딩용: 공격 버튼 Down
     public void FireButtonDown() { fireHeld = true; firePressed = true; }
 
@@ -174,18 +184,12 @@ public class Character : MonoBehaviour
         float interval = 1f / Mathf.Max(0.0001f, FireRate);
         nextFireTime = Time.time + interval;
 
-        if (!bulletPrefab)
-        {
-            Debug.Log("[Character] bulletPrefab 미지정");
-            return;
-        }
-
         //기준 방향 = 총구 방향 (무기 회전이 이미 조이스틱/타겟에 동기화되어 있다고 전제)
         float baseZ = fireOrigin ? fireOrigin.eulerAngles.z
                    : (weaponRoot ? weaponRoot.eulerAngles.z : 0f);
 
         int n = Mathf.Max(1, Burst);
-        float stepDeg = (n > 1) ? (SpreadDeg / (n - 1)) : 0f;  //균등 간격
+        float stepDeg = (n > 1) ? (SpreadDeg / (n - 1)) : 0f;
         float startDeg = -SpreadDeg * 0.5f;
 
         //스폰 위치 총구
@@ -196,9 +200,55 @@ public class Character : MonoBehaviour
             float deg = (n == 1) ? 0f : (startDeg + stepDeg * i);
             float z = baseZ + deg;
 
-            var proj = Instantiate(bulletPrefab, spawnPos, Quaternion.Euler(0f, 0f, z));
-            proj.Init(BulletSpeed, BulletLife, BulletDamage, BulletRad);
+            //풀에서 총알을 하나 꺼내서 세팅/발사
+            var proj = GetBullet();
+            proj.Spawn(
+                spawnPos,
+                Quaternion.Euler(0f, 0f, z),
+                BulletSpeed, BulletLife, BulletRad, BulletDamage,
+                ReturnBullet
+            );
         }
+    }
+
+    //총알을 풀링에다가 생성
+    private void CreateBullet()
+    {
+        //Pool 루트 생성
+        var root = new GameObject("Pool_Bullets");
+        bulletPoolRoot = root.transform;
+        bulletPoolRoot.SetParent(transform.root, false);
+
+        for (int i = 0; i < BulletPrewarm; i++)
+        {
+            var b = Instantiate(bulletPrefab, bulletPoolRoot);
+            b.gameObject.SetActive(false);
+            bulletPool.Enqueue(b);
+        }
+    }
+
+    //총알을 풀링에서 가져오기
+    private Bullet GetBullet()
+    {
+        if (bulletPool.Count > 0)
+        {
+            var b = bulletPool.Dequeue();
+            b.transform.SetParent(null, true);  //월드로 꺼냄
+            return b;
+        }
+
+        //부족할 경우 새로 생성
+        return Instantiate(bulletPrefab);
+    }
+
+    //총알을 풀링에 반환
+    private void ReturnBullet(Bullet b)
+    {
+        if (!b) return;
+
+        b.gameObject.SetActive(false);
+        b.transform.SetParent(bulletPoolRoot, true);
+        bulletPool.Enqueue(b);
     }
     #endregion
 
