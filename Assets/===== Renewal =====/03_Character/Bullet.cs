@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Rigidbody2D))]
@@ -15,23 +16,48 @@ public class Bullet : MonoBehaviour
     private int damage;
 
     //풀 복귀 콜백
-    private Action<Bullet> onDespawn;  
+    private Action<Bullet> onDespawn;
 
-    public void Spawn(Vector3 pos, Quaternion rot, float spd, float lifeTime, float radius, int dmg, Action<Bullet> despawnCb)
+    private LayerMask hitMask;  //총알이 맞출 대상 (Player 또는 Enemy)
+    private readonly List<Collider2D> ignored = new();
+
+    public void Spawn(
+        Vector3 pos, Quaternion rot,
+        float spd, float lifeTime, float radius, int dmg,
+        LayerMask hitMask,
+        Collider2D[] ignoreColliders,  //발사자 콜라이더들
+        Action<Bullet> despawnCb)
     {
+        //총구에서 발사
         transform.SetPositionAndRotation(pos, rot);
+
         speed = spd;
         life = lifeTime;
         damage = dmg;
         onDespawn = despawnCb;
+        this.hitMask = hitMask;
 
+        //반경 세팅
         float sx = Mathf.Abs(transform.lossyScale.x);
         col.radius = (sx > 0f) ? (radius / sx) : radius;
+
+        //발사자와 충돌 무시
+        ignored.Clear();
+        if (ignoreColliders != null)
+        {
+            for (int i = 0; i < ignoreColliders.Length; i++)
+            {
+                var oc = ignoreColliders[i];
+                if (!oc || oc == col) continue;
+                Physics2D.IgnoreCollision(col, oc, true);
+                ignored.Add(oc);
+            }
+        }
 
         gameObject.SetActive(true);
     }
 
-    void Update()
+    private void Update()
     {
         float dt = Time.deltaTime;
         transform.Translate(Vector3.right * speed * dt, Space.Self);
@@ -54,8 +80,8 @@ public class Bullet : MonoBehaviour
             return;
         }
 
-        //적: 데미지 적용 후 소멸
-        if ((bit & ConstClass.Masks.Enemy) != 0)
+        //맞출 대상: 데미지 적용 후 소멸
+        if ((bit & hitMask) != 0)
         {
             if (other.TryGetComponent<Health>(out var hp)) hp.TakeDamage(damage);
             else
@@ -63,15 +89,24 @@ public class Bullet : MonoBehaviour
                 var p = other.transform.parent;
                 if (p && p.TryGetComponent<Health>(out var php)) php.TakeDamage(damage);
             }
+            Despawn();
+
 #if UNITY_EDITOR
             Debug.Log($"[Hit] {other.name} -{damage}");
 #endif
-            Despawn();
         }
     }
 
     private void Despawn()
     {
+        //무시했던 충돌 원복
+        for (int i = 0; i < ignored.Count; i++)
+        {
+            var oc = ignored[i];
+            if (oc) Physics2D.IgnoreCollision(col, oc, false);
+        }
+        ignored.Clear();
+
         var cb = onDespawn;
         onDespawn = null;
         if (cb != null) cb(this);

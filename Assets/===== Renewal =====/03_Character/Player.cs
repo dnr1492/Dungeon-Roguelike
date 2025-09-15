@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class Character : MonoBehaviour
+public class Player : MonoBehaviour
 {
     [Header("Refs")]
     [SerializeField] Rigidbody2D rb;
@@ -22,7 +22,7 @@ public class Character : MonoBehaviour
     #endregion
 
     #region 락온
-    private readonly float StickyTime = 0.9f;  //락온 유지시간 (0이면 즉시 재선정)
+    private readonly float stickyTime = 0.9f;  //락온 유지시간 (0이면 즉시 재선정)
 
     private bool isCombat;
     private Bounds currentRoomBounds;  //전투 중 스캔 범위
@@ -34,13 +34,13 @@ public class Character : MonoBehaviour
 
     #region 무기 발사
     //발사체 튜닝값
-    private readonly float FireRate = 2f;      //초당 발사수
-    private readonly int Burst = 3;            //총 발사수 (1=단발)
-    private readonly float SpreadDeg = 30f;    //산탄 각도
-    private readonly float BulletSpeed = 8f;   //투사체 속도
-    private readonly float BulletLife = 1.2f;  //투사체 수명
-    private readonly float BulletRad = 0.1f;   //충돌 반경
-    private readonly int BulletDamage = 1;     //총알 데미지
+    private readonly float fireRate = 2f;      //초당 발사수
+    private readonly int burst = 3;            //총 동시 발사수 (1 = 단발)
+    private readonly float spreadDeg = 30f;    //총 산탄 각도 (버스트 > 1일 때만 의미)
+    private readonly float bulletSpeed = 8f;   //투사체 속도
+    private readonly float bulletLife = 1.2f;  //투사체 수명
+    private readonly float bulletRad = 0.1f;   //충돌 반경
+    private readonly int bulletDamage = 1;     //총알 데미지
 
     private float nextFireTime;
 
@@ -48,7 +48,7 @@ public class Character : MonoBehaviour
     private bool firePressed;  //이번 프레임에 "딱 한 번" 눌림 (edge)
 
     //총알 풀링
-    private readonly int BulletPrewarm = 30;
+    private readonly int bulletPrewarm = 30;
     private readonly Queue<Bullet> bulletPool = new Queue<Bullet>(64);
     private Transform bulletPoolRoot;
     #endregion
@@ -155,7 +155,7 @@ public class Character : MonoBehaviour
         }
 
         target = bestT;
-        if (target && StickyTime > 0f) stickyUntil = Time.time + StickyTime;
+        if (target && stickyTime > 0f) stickyUntil = Time.time + stickyTime;
     }
 
     private bool IsValidTarget(Transform t)
@@ -195,16 +195,16 @@ public class Character : MonoBehaviour
     private void TryFire()
     {
         if (Time.time < nextFireTime) return;
-        float interval = 1f / Mathf.Max(0.0001f, FireRate);
+        float interval = 1f / Mathf.Max(0.0001f, fireRate);
         nextFireTime = Time.time + interval;
 
         //기준 방향 = 총구 방향 (무기 회전이 이미 조이스틱/타겟에 동기화되어 있다고 전제)
         float baseZ = fireOrigin ? fireOrigin.eulerAngles.z
                    : (weaponRoot ? weaponRoot.eulerAngles.z : 0f);
 
-        int n = Mathf.Max(1, Burst);
-        float stepDeg = (n > 1) ? (SpreadDeg / (n - 1)) : 0f;
-        float startDeg = -SpreadDeg * 0.5f;
+        int n = Mathf.Max(1, burst);
+        float stepDeg = (n > 1) ? (spreadDeg / (n - 1)) : 0f;
+        float startDeg = -spreadDeg * 0.5f;
 
         //스폰 위치 총구
         Vector3 spawnPos = fireOrigin ? fireOrigin.position : transform.position;
@@ -214,12 +214,14 @@ public class Character : MonoBehaviour
             float deg = (n == 1) ? 0f : (startDeg + stepDeg * i);
             float z = baseZ + deg;
 
-            //풀에서 총알을 하나 꺼내서 세팅/발사
+            //풀에서 총알을 하나 꺼내서 세팅/발사  
             var proj = GetBullet();
             proj.Spawn(
                 spawnPos,
                 Quaternion.Euler(0f, 0f, z),
-                BulletSpeed, BulletLife, BulletRad, BulletDamage,
+                bulletSpeed, bulletLife, bulletRad, bulletDamage,
+                ConstClass.Masks.Enemy,                 //플레이어 총알은 적만 맞춤
+                GetComponentsInChildren<Collider2D>(),  //내 콜라이더 전부 무시
                 ReturnBullet
             );
         }
@@ -233,7 +235,7 @@ public class Character : MonoBehaviour
         bulletPoolRoot = root.transform;
         bulletPoolRoot.SetParent(transform.root, false);
 
-        for (int i = 0; i < BulletPrewarm; i++)
+        for (int i = 0; i < bulletPrewarm; i++)
         {
             var b = Instantiate(bulletPrefab, bulletPoolRoot);
             b.gameObject.SetActive(false);
@@ -280,7 +282,7 @@ public class Character : MonoBehaviour
     {
         if (!Application.isPlaying) return;
 
-        // 타깃 표시: 있을 때만
+        //타겟 표시: 있을 때만
         if (target)
         {
             //타겟 발밑 링

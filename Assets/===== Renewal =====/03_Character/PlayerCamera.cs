@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 [RequireComponent(typeof(Camera))]
-public class CharacterCamera : MonoBehaviour
+public class PlayerCamera : MonoBehaviour
 {
     [SerializeField] Camera cam;
     [SerializeField] Transform target;
@@ -9,13 +9,13 @@ public class CharacterCamera : MonoBehaviour
 
     private readonly float smoothTime = 0.15f;
     private readonly bool clampToRoom = true;
-    private Character player;
+    private Player player;
     private Vector3 vel;
     private float lastAspect = -1f;
 
     private void Awake()
     {
-        if (!player && target) player = target.GetComponentInParent<Character>();
+        if (!player && target) player = target.GetComponentInParent<Player>();
     }
 
     private void Update()

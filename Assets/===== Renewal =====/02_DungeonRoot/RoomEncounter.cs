@@ -73,7 +73,7 @@ public class RoomEncounter : MonoBehaviour
     }
 
     //플레이어가 방에 진입했을 때
-    public void OnPlayerEntered(Character player, Bounds worldBounds)
+    public void OnPlayerEntered(Player player, Bounds worldBounds)
     {
         roomBounds = worldBounds;
         cleared = false;
@@ -92,7 +92,7 @@ public class RoomEncounter : MonoBehaviour
         if (aliveEnemyCount <= 0) UnlockAndEnd(player);
     }
 
-    // 방 안의 적들을 목록에 등록하고 사망 이벤트 연결
+    //방 안의 적 수집 → 목록에 등록 + 활성화
     private void BeginCombat()
     {
         UnsubscribeEnemies();
@@ -116,6 +116,9 @@ public class RoomEncounter : MonoBehaviour
             h.OnDeath += OnEnemyDeath;
         }
         aliveEnemyCount = enemies.Count;
+
+        //이 방의 적 활성화
+        SetEnemyActiveAll(true);
     }
 
     //적이 사망했을 때
@@ -125,13 +128,13 @@ public class RoomEncounter : MonoBehaviour
         aliveEnemyCount--;
         if (aliveEnemyCount <= 0)
         {
-            var player = FindObjectOfType<Character>();
+            var player = FindObjectOfType<Player>();
             UnlockAndEnd(player);
         }
     }
 
-    //문 열기 + 전투 종료 + 적 목록 정리
-    private void UnlockAndEnd(Character player)
+    //문 열기 + 전투 종료 + 비활성화 + 적 목록 정리
+    private void UnlockAndEnd(Player player)
     {
         cleared = true;
 
@@ -140,7 +143,22 @@ public class RoomEncounter : MonoBehaviour
 
         if (player) player.SetCombat(false);
 
+        //이 방의 적 비활성화
+        SetEnemyActiveAll(false);
+
         UnsubscribeEnemies();
+    }
+
+    //방의 적 활성화/비활성화
+    private void SetEnemyActiveAll(bool active)
+    {
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            var h = enemies[i];
+            if (!h) continue;
+            var e = h.GetComponentInParent<Enemy>();
+            if (e) e.SetEncounterActive(active);
+        }
     }
 
     //적 목록/이벤트 정리

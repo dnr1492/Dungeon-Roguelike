@@ -6387,14 +6387,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyPoolCombat:
+  - {fileID: 8144346950983601911, guid: 5c57d2c9bc6dea249b7e2f3f528065ea, type: 3}
   - {fileID: 8144346950983601911, guid: 6a445b5fe2751ba47b88caa002e3c2b1, type: 3}
+  - {fileID: 8144346950983601911, guid: acfac16af7ad19e4a92f77120c8e5df2, type: 3}
   enemyPoolElite:
+  - {fileID: 8144346950983601911, guid: 5c57d2c9bc6dea249b7e2f3f528065ea, type: 3}
   - {fileID: 8144346950983601911, guid: 6a445b5fe2751ba47b88caa002e3c2b1, type: 3}
-  enemyCountRangeCombat: {x: 3, y: 6}
-  enemyCountRangeElite: {x: 2, y: 4}
-  minEnemyDistanceFromDoor: 2
-  minEnemyDistanceFromWall: 1
-  minEnemySpacing: 2
+  - {fileID: 8144346950983601911, guid: acfac16af7ad19e4a92f77120c8e5df2, type: 3}
 --- !u!1 &4036661925279594409
 GameObject:
   m_ObjectHideFlags: 0

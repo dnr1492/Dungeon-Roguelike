@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(RectTransform))]
 public class UIButtonAttack : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler
 {
-    [SerializeField] Character character;
+    [SerializeField] Player character;
 
     private int activePointerId = -1;
     private bool pressed;

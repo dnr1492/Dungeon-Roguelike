@@ -1,14 +1,18 @@
 using UnityEngine;
 using System;
 using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 
 [DisallowMultipleComponent]
 public class Health : MonoBehaviour
 {
     [SerializeField] SpriteRenderer spriteRenderer;
 
-    private readonly int maxHP = 3;
-    private readonly bool destroyOnDeath = true;
+    [Header("상태값")]
+    [SerializeField] int maxHP = 3;                    //최대 체력
+    [SerializeField] bool destroyOnDeath = true;       //죽을 시 즉시 파괴 유무
+    [SerializeField] bool usePerSourceIFrame = false;  //동일 공격자에게 피격 시 무적 유무 (Player는 true, Enemy는 false 추천)
+    [SerializeField] float perSourceIFrame = 0.35f;    //동일 공격자에게 피격 시 무적 시간
 
     public int Current { get; private set; }
     public event Action OnDeath;
@@ -21,6 +25,8 @@ public class Health : MonoBehaviour
     private readonly float hitFlashTime = 0.06f;
     #endregion
 
+    private readonly Dictionary<int, float> lastHitBy = new();  //최근 피격 기록 (공격자 ID → 마지막 시간)
+
     private void Awake()
     {
         Current = Mathf.Max(1, maxHP);
@@ -28,9 +34,29 @@ public class Health : MonoBehaviour
         originColor = spriteRenderer.color;
     }
 
-    public void TakeDamage(int dmg)
+    /// <summary>
+    /// 단순 데미지 적용 (공격자 ID 없음). 총알/트랩/환경에 사용.
+    /// '공격자별 i-frame' 로직은 타지 않는다.
+    /// </summary>
+    public void TakeDamage(int dmg) => TakeHit(dmg, 0);
+
+    /// <summary>
+    /// 공격자 ID를 동반한 데미지 적용. 근접/틱딜 등 '같은 공격자'의 연속 히트를
+    /// perSourceIFrame 내에서만 무시한다. 다른 공격자/다른 총알은 그대로 들어간다.
+    /// attackerId에는 보통 attacker.GetInstanceID()를 넣는다. (0을 넣으면 i-frame 미적용)
+    /// </summary>
+    public void TakeHit(int dmg, int attackerId)
     {
         if (Current <= 0) return;
+
+        if (usePerSourceIFrame && attackerId != 0)
+        {
+            float now = Time.time;
+            if (lastHitBy.TryGetValue(attackerId, out var last) && now - last < perSourceIFrame)
+                return;
+            lastHitBy[attackerId] = now;
+        }
+
         Current -= Mathf.Max(1, dmg);
 
         //히트 플래시
@@ -43,6 +69,10 @@ public class Health : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 피격 시 색상 표시
+    /// </summary>
+    /// <returns></returns>
     private async UniTaskVoid HitFlashAsync()
     {
         flashVer++;

@@ -13,7 +13,7 @@ public class RoomGateTrigger : MonoBehaviour
     private readonly bool closeWhenSteppedInside = true;  //방 내부 entryDepthCells 칸 수만큼 밟았을 때만 문 닫기
     private readonly int entryDepthCells = 1;   //내부 감지 깊이(타일 수)
 
-    private Character enteredCharacter;  //방에 들어온 캐릭터
+    private Player enteredCharacter;  //방에 들어온 캐릭터
     private RoomPlacer placer;
     private bool lockedOnce;
 
@@ -75,7 +75,7 @@ public class RoomGateTrigger : MonoBehaviour
         if (!Application.isPlaying) return;
         if (!other) return;
 
-        var ch = other.GetComponentInParent<Character>();
+        var ch = other.GetComponentInParent<Player>();
         if (!ch) return;  //플레이어만 통과
 
         //'안쪽 ~ 칸 닫기' 모드면 여기서는 닫지 않는다. (OnTriggerStay2D로 처리)
@@ -97,7 +97,7 @@ public class RoomGateTrigger : MonoBehaviour
         if (lockedOnce) return;
         if (!other) return;
 
-        var ch = other.GetComponentInParent<Character>();
+        var ch = other.GetComponentInParent<Player>();
         if (!ch) return;  //플레이어만 통과
 
         if (!placer) placer = FindObjectOfType<RoomPlacer>();

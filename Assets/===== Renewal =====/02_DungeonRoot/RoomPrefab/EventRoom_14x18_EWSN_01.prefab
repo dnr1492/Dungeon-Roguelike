@@ -521,15 +521,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 799fb7b067494ad4f8d2d30f13e1dcc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPoolCombat:
-  - {fileID: 8144346950983601911, guid: 6a445b5fe2751ba47b88caa002e3c2b1, type: 3}
-  enemyPoolElite:
-  - {fileID: 8144346950983601911, guid: 6a445b5fe2751ba47b88caa002e3c2b1, type: 3}
-  enemyCountRangeCombat: {x: 3, y: 6}
-  enemyCountRangeElite: {x: 2, y: 4}
-  minEnemyDistanceFromDoor: 2
-  minEnemyDistanceFromWall: 1
-  minEnemySpacing: 2
+  enemyPoolCombat: []
+  enemyPoolElite: []
 --- !u!1 &3133958012648086945
 GameObject:
   m_ObjectHideFlags: 0

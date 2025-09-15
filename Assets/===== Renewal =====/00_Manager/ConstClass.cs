@@ -15,7 +15,7 @@ public static class ConstClass
     public static class Layers
     {
         public const string Player = "Player";
-        public const string MonsterBody = "MonsterBody";
+        public const string Monster = "Monster";
         public const string Wall = "Wall";
 
         public static int Id(string name) => LayerMask.NameToLayer(name);
@@ -23,7 +23,8 @@ public static class ConstClass
 
     public static class Masks
     {
-        public static readonly LayerMask Enemy = LayerMask.GetMask(Layers.MonsterBody);
+        public static readonly LayerMask Player = LayerMask.GetMask(Layers.Player);
+        public static readonly LayerMask Enemy = LayerMask.GetMask(Layers.Monster);
         public static readonly LayerMask Wall = LayerMask.GetMask(Layers.Wall);
     }
 

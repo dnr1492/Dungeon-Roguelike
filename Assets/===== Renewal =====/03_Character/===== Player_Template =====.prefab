@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 6158832195807680350}
   - component: {fileID: 6158832195807680345}
   - component: {fileID: 6158832195807680344}
+  - component: {fileID: 8408063204003760331}
   m_Layer: 7
   m_Name: ===== Player_Template =====
   m_TagString: Player
@@ -165,7 +166,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6158832195807680347}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58d718eae0d4f8d488feea0bb2a8b94e, type: 3}
+  m_Script: {fileID: 11500000, guid: d207fbe6573f36f4a98417e2be4e00e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 6158832195807680345}
@@ -174,6 +175,23 @@ MonoBehaviour:
   weaponRoot: {fileID: 2506294155313113860}
   fireOrigin: {fileID: 2791174375053084575}
   bulletPrefab: {fileID: 4765227233026711473, guid: bc21e956a4a84f448bc9e1b52a91d24a, type: 3}
+--- !u!114 &8408063204003760331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6158832195807680347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20ea61820ea9fdc4a89e828ad1ce30e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 3045999934330268900}
+  maxHP: 10
+  destroyOnDeath: 0
+  usePerSourceIFrame: 1
+  perSourceIFrame: 0
 --- !u!1 &6857752534632385880
 GameObject:
   m_ObjectHideFlags: 0
