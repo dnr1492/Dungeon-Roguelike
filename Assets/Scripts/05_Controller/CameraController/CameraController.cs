@@ -6,7 +6,7 @@ public class CameraController : Controller
 {
     [Header("카메라")]
     private Camera mainCam;  //메인 카메라
-    [SerializeField] private Vector3 SetMainCamOffset;  //메인 카메라의 각도를 설정
+    [SerializeField] Vector3 setMainCamOffset;  //메인 카메라의 각도를 설정
 
     [Header("플레이어")]
     private Transform playerTr;  //플레이어의 위치
@@ -33,7 +33,7 @@ public class CameraController : Controller
     /// </summary>
     private void MoveCameraToPlayer()
     {
-        mainCam.transform.position = playerTr.position + SetMainCamOffset;
+        mainCam.transform.position = playerTr.position + setMainCamOffset;
         mainCam.transform.LookAt(playerTr.transform);
     }
 }

@@ -81,7 +81,7 @@ public class Bullet : MonoBehaviour
     private void OnDisable()
     {
         //방어적인 코드: 비활성화될 때 이동/수명 상태 초기화 (재사용 시 안정)
-        //life/damage는 Spawn에서 매번 덮어씀
+        //life/damage는 Spawn에서 매번 초기화
         speed = 0f;
     }
 

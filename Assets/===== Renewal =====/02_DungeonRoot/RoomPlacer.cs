@@ -77,8 +77,8 @@ public class RoomPlacer : MonoBehaviour
 
     private readonly List<PlacedRoom> placed = new();
     private readonly HashSet<Vector3Int> occupied = new HashSet<Vector3Int>();  //전역 그리드 점유 셀 (방 + 복도)
-    private readonly int hallMin = 10;  //복도 최소 길이(타일)
-    private readonly int hallMax = 10;  //복도 최대 길이(타일)
+    private readonly int hallMin = 15;  //복도 최소 길이(타일)
+    private readonly int hallMax = 15;  //복도 최대 길이(타일)
     private readonly Dictionary<PlacedRoom, HashSet<PlacedRoom>> graph = new();
     private readonly HashSet<PlacedDoor> deadDoors = new HashSet<PlacedDoor>();  //더이상 시도하지 않을 도어
     private readonly HashSet<PlacedRoom> deadRooms = new HashSet<PlacedRoom>();  //롤백으로 삭제된 방 (그 방의 도어는 무시)

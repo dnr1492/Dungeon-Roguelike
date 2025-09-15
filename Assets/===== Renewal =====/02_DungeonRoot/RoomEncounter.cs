@@ -8,13 +8,13 @@ public class RoomEncounter : MonoBehaviour
     [SerializeField] List<GameObject> enemyPoolCombat;
     [SerializeField] List<GameObject> enemyPoolElite;
 
-    [Header("Counts")]
-    [SerializeField] Vector2Int enemyCountRangeCombat = new Vector2Int(3, 6);
-    [SerializeField] Vector2Int enemyCountRangeElite = new Vector2Int(2, 4);
-
+    #region 적 생성 설정값
+    private readonly Vector2Int enemyCountRangeCombat = new Vector2Int(10, 20);
+    private readonly Vector2Int enemyCountRangeElite = new Vector2Int(20, 40);
     private readonly int minEnemyDistanceFromDoor = 2;
     private readonly int minEnemyDistanceFromWall = 1;
     private readonly int minEnemySpacing = 2;
+    #endregion
 
     private PlacedRoom myRoom;
     private Grid dungeonGrid;

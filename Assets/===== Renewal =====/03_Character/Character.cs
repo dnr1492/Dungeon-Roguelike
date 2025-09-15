@@ -12,8 +12,13 @@ public class Character : MonoBehaviour
     [SerializeField] Transform fireOrigin;  //총구/타격 기준점
     [SerializeField] Bullet bulletPrefab;
 
+    public bool HasRoomBounds => hasBounds;
+    public Bounds RoomBounds => currentRoomBounds;
+
     #region 이동
-    private readonly float MoveSpeed = 5f;     //이동 속도
+    private readonly float moveSpeed = 5f;     //이동 속도
+
+    private Vector2 moveInput;
     #endregion
 
     #region 락온
@@ -74,7 +79,7 @@ public class Character : MonoBehaviour
                 move = new Vector2(kx, ky);
         }
 #endif
-        if (rb) rb.velocity = move.normalized * MoveSpeed;
+        moveInput = move;
 
         //2) 전투 중이면 룸 Bounds로 락온 갱신
         if (isCombat && hasBounds) UpdateLockOn();
@@ -97,6 +102,15 @@ public class Character : MonoBehaviour
         //5) 캐릭터는 회전하지 않고 FlipX만 변경
         float dirX = (aim.sqrMagnitude > 0.0001f) ? aim.x : move.x;
         if (sprite && Mathf.Abs(dirX) > 0.0001f) sprite.flipX = dirX < 0f;
+    }
+
+    private void FixedUpdate()
+    {
+        //이동
+        if (!rb) return;
+        rb.velocity = (moveInput.sqrMagnitude > 0.000001f)
+            ? moveInput.normalized * moveSpeed
+            : Vector2.zero;
     }
 
     #region 전투 세팅

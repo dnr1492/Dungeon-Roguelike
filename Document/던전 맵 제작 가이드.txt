@@ -52,7 +52,6 @@ RoomPropPainter
 
 RoomEncounter
 - 방에서 생성할 Enemy 프리팹을 Pool에 할당
-- Enemy 수를 설정
 
 Sorting Layers
 - Background: 가장 뒤 배경 (ex) 동굴 안의 검은 배경, 먼 배경 산, 벽 뒤 어둠)
