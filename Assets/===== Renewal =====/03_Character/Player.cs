@@ -53,11 +53,6 @@ public class Player : MonoBehaviour
     private Transform bulletPoolRoot;
     #endregion
 
-    private void Awake()
-    {
-        CreateBullet();
-    }
-
     private void Update()
     {
         //1) 이동
@@ -215,56 +210,16 @@ public class Player : MonoBehaviour
             float z = baseZ + deg;
 
             //풀에서 총알을 하나 꺼내서 세팅/발사  
-            var proj = GetBullet();
+            var proj = GameManager.Instance.GetBullet(bulletPrefab);
             proj.Spawn(
                 spawnPos,
                 Quaternion.Euler(0f, 0f, z),
                 bulletSpeed, bulletLife, bulletRad, bulletDamage,
                 ConstClass.Masks.Enemy,                 //플레이어 총알은 적만 맞춤
                 GetComponentsInChildren<Collider2D>(),  //내 콜라이더 전부 무시
-                ReturnBullet
+                GameManager.Instance.ReturnBullet
             );
         }
-    }
-
-    //총알을 풀링에다가 생성
-    private void CreateBullet()
-    {
-        //Pool 루트 생성
-        var root = new GameObject("Pool_Bullets");
-        bulletPoolRoot = root.transform;
-        bulletPoolRoot.SetParent(transform.root, false);
-
-        for (int i = 0; i < bulletPrewarm; i++)
-        {
-            var b = Instantiate(bulletPrefab, bulletPoolRoot);
-            b.gameObject.SetActive(false);
-            bulletPool.Enqueue(b);
-        }
-    }
-
-    //총알을 풀링에서 가져오기
-    private Bullet GetBullet()
-    {
-        if (bulletPool.Count > 0)
-        {
-            var b = bulletPool.Dequeue();
-            b.transform.SetParent(null, true);  //월드로 꺼냄
-            return b;
-        }
-
-        //부족할 경우 새로 생성
-        return Instantiate(bulletPrefab);
-    }
-
-    //총알을 풀링에 반환
-    private void ReturnBullet(Bullet b)
-    {
-        if (!b) return;
-
-        b.gameObject.SetActive(false);
-        b.transform.SetParent(bulletPoolRoot, true);
-        bulletPool.Enqueue(b);
     }
     #endregion
 

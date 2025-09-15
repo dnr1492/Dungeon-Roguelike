@@ -49,6 +49,12 @@ public class Enemy : MonoBehaviour
     private float nextFireTime;
     #endregion
 
+    #region 소프트 분리 (겹침 최소화)
+    private readonly float separationRadius = 0.6f;    //서로 너무 붙으면 밀어낼 반경
+    private readonly float separationStrength = 0.5f;  //분리 가중치
+    private readonly Collider2D[] sepBuf = new Collider2D[8];  //GC 없도록 버퍼
+    #endregion
+
     private void Awake()
     {
         attackerId = GetInstanceID();
@@ -82,7 +88,7 @@ public class Enemy : MonoBehaviour
             if (meleeEngaged)
             {
                 //근접: 충분히 벌어질 때까지 근접 로직 지속
-                if (dist > meleeExitRange) meleeEngaged = false; 
+                if (dist > meleeExitRange) meleeEngaged = false;
                 rb.velocity = (dist <= meleeRange) ? Vector2.zero      //근접 공격 사거리 진입 시 정지 (트리거 타격)
                                                    : moveSpeed * dir;  //그 전에는 계속 접근 (카이팅 금지)
             }
@@ -107,12 +113,12 @@ public class Enemy : MonoBehaviour
             }
         }
         //근접 공격 전용
-        else if (enableMelee) 
+        else if (enableMelee)
         {
             rb.velocity = (dist <= meleeRange) ? Vector2.zero : moveSpeed * dir;
         }
         //원거리 공격 전용
-        else if (enableRanged) 
+        else if (enableRanged)
         {
             float far = rangedRange + rangeHysteresis;
             float near = rangedRange - rangeHysteresis;
@@ -124,6 +130,34 @@ public class Enemy : MonoBehaviour
         else
         {
             rb.velocity = moveSpeed * dir;
+        }
+
+        //소프트 분리 (적 겹침 최소화): 가까운 Enemy끼리 살짝 밀어낸다.
+        //정지 중에도 수행 (겹침 최소화)
+        if (rb) 
+        {
+            int count = Physics2D.OverlapCircleNonAlloc(transform.position, separationRadius, sepBuf, ConstClass.Masks.Enemy);
+            if (count > 0)
+            {
+                Vector2 push = Vector2.zero;
+                Vector2 self = transform.position;
+                for (int i = 0; i < count; i++)
+                {
+                    var c = sepBuf[i];
+                    if (!c || c.attachedRigidbody == rb) continue;
+                    Vector2 other = c.attachedRigidbody ? c.attachedRigidbody.position : c.transform.position;
+                    Vector2 delta = self - other;
+                    float d = delta.magnitude;
+                    if (d < 0.0001f) continue;
+                    float w = Mathf.InverseLerp(separationRadius, 0f, d);  //가까울수록 가중↑
+                    push += delta.normalized * w;
+                }
+                if (push.sqrMagnitude > 0.0001f)
+                {
+                    Vector2 sep = push.normalized * separationStrength;
+                    rb.velocity += sep;
+                }
+            }
         }
 
         //전방 감속 (벽 코앞 박치기 방지)
@@ -217,14 +251,15 @@ public class Enemy : MonoBehaviour
         for (int i = 0; i < n; i++)
         {
             float z = baseZ + (n == 1 ? 0f : start + step * i);
-            var b = Instantiate(bulletPrefab);  // ===== TODO: 적 전용 풀링은 추후 ===== //
-                b.Spawn(
+
+            var b = GameManager.Instance.GetBullet(bulletPrefab);
+            b.Spawn(
                 origin,
                 Quaternion.Euler(0, 0, z),
                 bulletSpeed, bulletLife, bulletRadius, bulletDamage,
                 ConstClass.Masks.Player,  //적 총알은 플레이어만 맞춤
                 ignore,
-                null
+                GameManager.Instance.ReturnBullet
             );
         }
     }
