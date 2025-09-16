@@ -77,38 +77,44 @@ public class Enemy : MonoBehaviour
         float dist = to.magnitude;
         Vector2 dir = (dist > 0.0001f) ? (to / dist) : Vector2.zero;
 
-        // ── 이동 정책 ─────────────────────────────────────────
+        // ── 이동 정책 ─────────────────────────────────────────────────────────────
         // 1) 하이브리드: '근접 공격 사거리 안' && '근접 공격 유지 해제 거리 안' 이면 '근접 공격' 로직, 바깥이면 '원거리 공격' 로직 (사거리 유지)
         // 2) 근접 전용 (enableMelee만 On): meleeRange 이내로 계속 접근
         // 3) 원거리 전용 (enableRanged만 On): 사거리 유지 (멀면 접근, 너무 가까우면 후퇴 or 정지)
-        // ─────────────────────────────────────────────────
+        // ─────────────────────────────────────────────────────────────────────
 
         if (enableMelee && enableRanged)
         {
+            //근접: 충분히 벌어질 때까지 근접 로직 지속
             if (meleeEngaged)
             {
-                //근접: 충분히 벌어질 때까지 근접 로직 지속
                 if (dist > meleeExitRange) meleeEngaged = false;
-                rb.velocity = (dist <= meleeRange) ? Vector2.zero      //근접 공격 사거리 진입 시 정지 (트리거 타격)
-                                                   : moveSpeed * dir;  //그 전에는 계속 접근 (카이팅 금지)
+                rb.velocity = (dist <= meleeRange) 
+                    ? Vector2.zero      //근접 공격 사거리 진입 시 정지 (트리거 타격)
+                    : moveSpeed * dir;  //그 전에는 계속 접근 (카이팅 금지)
             }
             else
             {
                 //근접 전환
-                if (dist <= meleeRange)
+                if (dist <= meleeExitRange)
                 {
-                    meleeEngaged = true;
-                    rb.velocity = Vector2.zero;
+                    if (dist <= meleeRange)
+                    {
+                        meleeEngaged = true;
+                        rb.velocity = Vector2.zero;
+                    }
+                    else
+                    {
+                        rb.velocity = moveSpeed * dir;  //붙어서 근접 유도
+                    }
                 }
                 //원거리 공격 유지
                 else
                 {
-                    float far = rangedRange + rangeHysteresis;
-                    float near = rangedRange - rangeHysteresis;
-
-                    if (dist > far) rb.velocity = moveSpeed * dir;
-                    else if (dist < near) rb.velocity = backpedalWhenTooClose ? -moveSpeed * dir : Vector2.zero;
-                    else rb.velocity = Vector2.zero;
+                    float near = rangedRange - rangeHysteresis;  //너무 가까워지면 후퇴 시작 경계
+                    if (dist > rangedRange) rb.velocity = moveSpeed * dir;  //사거리 바깥 → 계속 접근
+                    else if (dist < near) rb.velocity = backpedalWhenTooClose ? -moveSpeed * dir : Vector2.zero;  //너무 가까움 → 후퇴
+                    else rb.velocity = Vector2.zero;  //사거리 안쪽 → 정지 (사격)
                 }
             }
         }
@@ -120,12 +126,10 @@ public class Enemy : MonoBehaviour
         //원거리 공격 전용
         else if (enableRanged)
         {
-            float far = rangedRange + rangeHysteresis;
-            float near = rangedRange - rangeHysteresis;
-
-            if (dist > far) rb.velocity = moveSpeed * dir;
-            else if (dist < near) rb.velocity = backpedalWhenTooClose ? -moveSpeed * dir : Vector2.zero;
-            else rb.velocity = Vector2.zero;
+            float near = rangedRange - rangeHysteresis;  //너무 가까워지면 후퇴 시작 경계
+            if (dist > rangedRange) rb.velocity = moveSpeed * dir;  //사거리 바깥 → 계속 접근
+            else if (dist < near) rb.velocity = backpedalWhenTooClose ? -moveSpeed * dir : Vector2.zero;  //너무 가까움 → 후퇴
+            else rb.velocity = Vector2.zero;  //사거리 안쪽 → 정지 (사격)
         }
         else
         {
@@ -134,7 +138,7 @@ public class Enemy : MonoBehaviour
 
         //소프트 분리 (적 겹침 최소화): 가까운 Enemy끼리 살짝 밀어낸다.
         //정지 중에도 수행 (겹침 최소화)
-        if (rb) 
+        if (rb)
         {
             int count = Physics2D.OverlapCircleNonAlloc(transform.position, separationRadius, sepBuf, ConstClass.Masks.Enemy);
             if (count > 0)
@@ -268,21 +272,50 @@ public class Enemy : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
-        //근접 공격 사거리
-        Gizmos.color = new Color(1f, 0.4f, 0.2f, 0.5f);
-        Gizmos.DrawWireSphere(transform.position, meleeRange);
+        bool drawMelee = enableMelee;
+        bool drawRanged = enableRanged;
 
-        //원거리 공격 사거리 + 히스테리시스 밴드
-        if (enableRanged && rangedRange > 0f)
+        Vector3 p = transform.position;
+
+        if (drawMelee)
         {
-            Gizmos.color = new Color(0.2f, 0.6f, 1f, 0.35f);
-            Gizmos.DrawWireSphere(transform.position, rangedRange);
+            //빨강: meleeRange (근접 타격이 실제로 들어가는 반경)
+            Gizmos.color = new Color(1f, 0.4f, 0.2f, 0.55f);
+            Gizmos.DrawWireSphere(p, meleeRange);
+
+            //주황: meleeExitRange (근접 상태 해제 / 하이브리드 전환 외곽 경계)
+            Gizmos.color = new Color(1f, 0.8f, 0.2f, 0.30f);
+            Gizmos.DrawWireSphere(p, meleeExitRange);
+
+            //라벨 (편의용)
+            UnityEditor.Handles.color = new Color(1f, 1f, 1f, 0.8f);
+            UnityEditor.Handles.Label(p + Vector3.right * (meleeRange + 0.05f), "meleeRange");
+            UnityEditor.Handles.Label(p + Vector3.right * (meleeExitRange + 0.05f), "meleeExitRange");
+        }
+
+        if (drawRanged && rangedRange > 0f)
+        {
+            //파랑 (진): rangedRange (원거리 공격 사거리)
+            Gizmos.color = new Color(0.2f, 0.6f, 1f, 0.85f);
+            Gizmos.DrawWireSphere(p, rangedRange);
 
             if (rangeHysteresis > 0f)
             {
-                Gizmos.color = new Color(0.2f, 0.6f, 1f, 0.15f);
-                Gizmos.DrawWireSphere(transform.position, rangedRange - rangeHysteresis);
-                Gizmos.DrawWireSphere(transform.position, rangedRange + rangeHysteresis);
+                //파랑 (옅-내부): near = rangedRange - rangeHysteresis (너무 가까우면 후퇴 시작 경계)
+                Gizmos.color = new Color(0.2f, 0.6f, 1f, 0.25f);
+                Gizmos.DrawWireSphere(p, rangedRange - rangeHysteresis);
+
+                //파랑 (옅-외부): far = rangedRange + rangeHysteresis (참고용 표식)
+                Gizmos.DrawWireSphere(p, rangedRange + rangeHysteresis);
+            }
+
+            //라벨(편의용)
+            UnityEditor.Handles.color = new Color(1f, 1f, 1f, 0.8f);
+            UnityEditor.Handles.Label(p + Vector3.up * 0.05f + Vector3.right * (rangedRange + 0.05f), "rangedRange");
+            if (rangeHysteresis > 0f)
+            {
+                UnityEditor.Handles.Label(p + Vector3.right * (rangedRange - rangeHysteresis + 0.05f), "near");
+                UnityEditor.Handles.Label(p + Vector3.right * (rangedRange + rangeHysteresis + 0.05f), "far (ref)");
             }
         }
     }

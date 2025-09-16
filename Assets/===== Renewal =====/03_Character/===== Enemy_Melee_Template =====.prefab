@@ -175,6 +175,7 @@ MonoBehaviour:
   meleeTrigger: {fileID: 8144346950983601905}
   enableRanged: 0
   bulletPrefab: {fileID: 4765227233026711473, guid: bc21e956a4a84f448bc9e1b52a91d24a, type: 3}
+  gizmoMode: 2
 --- !u!114 &8144346950983601904
 MonoBehaviour:
   m_ObjectHideFlags: 0
