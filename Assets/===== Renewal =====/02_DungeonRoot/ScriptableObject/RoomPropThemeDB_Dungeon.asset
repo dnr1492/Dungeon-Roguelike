@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: efdb8d65c89214946a88084043720a6d, type: 3}
-  m_Name: RoomPropThemeDB
+  m_Name: RoomPropThemeDB_Dungeon
   m_EditorClassIdentifier: 
   themeSets:
   - theme: 4

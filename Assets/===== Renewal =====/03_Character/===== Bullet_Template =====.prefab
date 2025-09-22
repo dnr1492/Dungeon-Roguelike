@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6487465476530477999}
   - component: {fileID: 4765227233026711473}
   m_Layer: 0
-  m_Name: Bullet
+  m_Name: ===== Bullet_Template =====
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -136,5 +136,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a193c7bef8251af458059456280ce355, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rb: {fileID: 6487465476530477999}
-  col: {fileID: 6311828227049157977}
+  circleCol: {fileID: 6311828227049157977}

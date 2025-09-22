@@ -4,18 +4,6 @@ using UnityEngine.Tilemaps;
 
 public class RoomEncounter : MonoBehaviour
 {
-    [Header("Enemy Pools")]
-    [SerializeField] List<GameObject> enemyPoolCombat;
-    [SerializeField] List<GameObject> enemyPoolElite;
-
-    #region 적 생성 설정값
-    private readonly Vector2Int enemyCountRangeCombat = new Vector2Int(10, 20);
-    private readonly Vector2Int enemyCountRangeElite = new Vector2Int(20, 40);
-    private readonly int minEnemyDistanceFromDoor = 2;
-    private readonly int minEnemyDistanceFromWall = 1;
-    private readonly int minEnemySpacing = 2;
-    #endregion
-
     private PlacedRoom myRoom;
     private Grid dungeonGrid;
     private readonly List<Health> enemies = new();
@@ -35,21 +23,25 @@ public class RoomEncounter : MonoBehaviour
         bool isElite = myRoom.go.CompareTag(ConstClass.Tags.EliteRoom);
         if (!isCombat && !isElite) return;
 
-        var pool = isCombat ? enemyPoolCombat : enemyPoolElite;
+        var run = GameManager.Instance.CurrentRun;
+        if (run == null) return;
+
+        var set = isCombat ? run.combat : run.elite;
+        var pool = set.enemyPool;
         if (pool == null || pool.Count == 0) return;
 
         var doorWorlds = new List<Vector3Int>();
         foreach (var d in myRoom.doors) doorWorlds.Add(d.worldTile);
 
-        var candidates = CollectEnemyCandidateCells(myRoom, doorWorlds);
+        var candidates = CollectEnemyCandidateCells(myRoom, doorWorlds, set.minDistFromDoor, set.minDistFromWall);
         if (candidates.Count == 0) return;
 
         int seed = myRoom.origin.x * 73856093 ^ myRoom.origin.y * 19349663 ^ myRoom.origin.z * 83492791 ^ 0xE11E;
         var rng = new System.Random(seed);
 
-        int want = isCombat
-            ? Mathf.Clamp(rng.Next(enemyCountRangeCombat.x, enemyCountRangeCombat.y + 1), 0, candidates.Count)
-            : Mathf.Clamp(rng.Next(enemyCountRangeElite.x, enemyCountRangeElite.y + 1), 0, candidates.Count);
+        int want = Mathf.Clamp(rng.Next(set.countRange.x, set.countRange.y + 1), 0, candidates.Count);
+
+        int minEnemySpacing = set.minEnemySpacing;
 
         ShuffleInPlaceDeterministic(candidates, rng);
 
@@ -172,16 +164,20 @@ public class RoomEncounter : MonoBehaviour
     }
 
     #region 스폰 후보 수집
-    private List<Vector3Int> CollectEnemyCandidateCells(PlacedRoom pr, List<Vector3Int> doorWorlds)
+    private List<Vector3Int> CollectEnemyCandidateCells(PlacedRoom pr, List<Vector3Int> doorWorlds,
+                                                    int minEnemyDistanceFromDoor, int minEnemyDistanceFromWall)
     {
         var res = new List<Vector3Int>();
         if (pr == null || pr.go == null) return res;
 
         var forbid = new HashSet<Vector3Int>();
-        foreach (var wc in doorWorlds)
-            for (int dx = -minEnemyDistanceFromDoor; dx <= minEnemyDistanceFromDoor; dx++)
-                for (int dy = -minEnemyDistanceFromDoor; dy <= minEnemyDistanceFromDoor; dy++)
-                    forbid.Add(new Vector3Int(wc.x + dx, wc.y + dy, 0));
+        if (minEnemyDistanceFromDoor > 0)
+        {
+            foreach (var wc in doorWorlds)
+                for (int dx = -minEnemyDistanceFromDoor; dx <= minEnemyDistanceFromDoor; dx++)
+                    for (int dy = -minEnemyDistanceFromDoor; dy <= minEnemyDistanceFromDoor; dy++)
+                        forbid.Add(new Vector3Int(wc.x + dx, wc.y + dy, 0));
+        }
 
         var wallsMap = FindWallsMap(pr);
 

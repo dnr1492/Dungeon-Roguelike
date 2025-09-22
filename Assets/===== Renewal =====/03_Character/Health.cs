@@ -6,13 +6,8 @@ using System.Collections.Generic;
 [DisallowMultipleComponent]
 public class Health : MonoBehaviour
 {
+    [SerializeField] CharacterStats stats;
     [SerializeField] SpriteRenderer spriteRenderer;
-
-    [Header("상태값")]
-    [SerializeField] int maxHP = 3;                    //최대 체력
-    [SerializeField] bool destroyOnDeath = true;       //죽을 시 즉시 파괴 유무
-    [SerializeField] bool usePerSourceIFrame = false;  //동일 공격자에게 피격 시 무적 유무 (Player는 true, Enemy는 false 추천)
-    [SerializeField] float perSourceIFrame = 0.35f;    //동일 공격자에게 피격 시 무적 시간
 
     public int Current { get; private set; }
     public event Action OnDeath;
@@ -29,7 +24,7 @@ public class Health : MonoBehaviour
 
     private void Awake()
     {
-        Current = Mathf.Max(1, maxHP);
+        Current = Mathf.Max(1, stats.maxHP);
 
         originColor = spriteRenderer.color;
     }
@@ -49,10 +44,10 @@ public class Health : MonoBehaviour
     {
         if (Current <= 0) return;
 
-        if (usePerSourceIFrame && attackerId != 0)
+        if (stats.usePerSourceIFrame && attackerId != 0)
         {
             float now = Time.time;
-            if (lastHitBy.TryGetValue(attackerId, out var last) && now - last < perSourceIFrame)
+            if (lastHitBy.TryGetValue(attackerId, out var last) && now - last < stats.perSourceIFrame)
                 return;
             lastHitBy[attackerId] = now;
         }
@@ -65,7 +60,7 @@ public class Health : MonoBehaviour
         if (Current <= 0)
         {
             OnDeath?.Invoke();
-            if (destroyOnDeath) Destroy(gameObject);
+            if (stats.destroyOnDeath) Destroy(gameObject);
         }
     }
 

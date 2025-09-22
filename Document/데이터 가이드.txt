@@ -1,0 +1,16 @@
+데이터 자산 (ScriptableObject) 생성 시 파일명 규칙
+- CharacterStats: CharacterStats_Player_<직업>, CharacterStats_Enemy_<종류>
+- EnemyProfile: EnemyProfile_Melee|Ranged|Hybrid_<종류>
+- Weapon: RangedWeaponData_Player|Enemy_<무기명>, MeleeWeaponData_<무기명>
+- RunConfig: RunConfig_<테마>
+
+캐릭터(플레이어, 적)/무기(총알, Melee, Ranged, Hybrid) 생성 시 이하 Template 참고하기
+- ===== Player_Template =====
+- ===== Enemy_Ranged_Template =====
+- ===== Enemy_Melee_Template =====
+- ===== Enemy_Hybrid_Template =====
+- ===== Bullet_Template =====
+
+Hybrid 설정하는 방법
+- RangedData와 MeleeData 모두 할당
+- EnemyProfile_Hybrid에 EnableMelee와 EnableRanged 체크 필요

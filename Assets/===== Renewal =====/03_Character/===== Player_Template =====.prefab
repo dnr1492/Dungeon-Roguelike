@@ -169,6 +169,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d207fbe6573f36f4a98417e2be4e00e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stats: {fileID: 11400000, guid: 62b55544b9e7d454991dd81d80078c7b, type: 2}
+  rangedData: {fileID: 11400000, guid: 1a379d4d6db502f46b74e2c72c8da466, type: 2}
   rb: {fileID: 6158832195807680345}
   sprite: {fileID: 3045999934330268900}
   joystick: {fileID: 0}
@@ -187,11 +189,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20ea61820ea9fdc4a89e828ad1ce30e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stats: {fileID: 11400000, guid: 62b55544b9e7d454991dd81d80078c7b, type: 2}
   spriteRenderer: {fileID: 3045999934330268900}
-  maxHP: 10
-  destroyOnDeath: 0
-  usePerSourceIFrame: 1
-  perSourceIFrame: 0
 --- !u!1 &6857752534632385880
 GameObject:
   m_ObjectHideFlags: 0

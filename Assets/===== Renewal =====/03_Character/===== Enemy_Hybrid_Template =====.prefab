@@ -169,13 +169,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e0c2bfdbd15e9b4c91afb3c1c9c54c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  profile: {fileID: 11400000, guid: 8a78d787992ff1d4ca70b1a3181b6af4, type: 2}
+  stats: {fileID: 11400000, guid: 792c8931ee1078a48b4643083b0a9e6f, type: 2}
+  rangedData: {fileID: 11400000, guid: f8ddb58615cc4304bac8cf32b460265b, type: 2}
+  meleeData: {fileID: 11400000, guid: e2d2d5351c36174469ddeae9959084d2, type: 2}
   rb: {fileID: 8144346950983601908}
   fireOrigin: {fileID: 6759238218077152842}
-  enableMelee: 1
   meleeTrigger: {fileID: 8144346950983601905}
-  enableRanged: 1
   bulletPrefab: {fileID: 4765227233026711473, guid: bc21e956a4a84f448bc9e1b52a91d24a, type: 3}
-  gizmoMode: 4
 --- !u!114 &8144346950983601904
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -188,8 +189,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20ea61820ea9fdc4a89e828ad1ce30e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stats: {fileID: 11400000, guid: 792c8931ee1078a48b4643083b0a9e6f, type: 2}
   spriteRenderer: {fileID: 8144346950983601909}
-  maxHP: 3
-  destroyOnDeath: 1
-  usePerSourceIFrame: 0
-  perSourceIFrame: 0.35

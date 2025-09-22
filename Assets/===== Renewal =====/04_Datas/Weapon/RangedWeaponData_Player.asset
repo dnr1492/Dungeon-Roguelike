@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d9c752def2498e488b0675c940fbc39, type: 3}
+  m_Name: RangedWeaponData_Player
+  m_EditorClassIdentifier: 
+  fireRate: 2
+  burst: 3
+  spreadDeg: 50
+  bulletSpeed: 8
+  bulletLife: 1.2
+  bulletRadius: 0.1
+  bulletDamage: 1
+  initialFireDelayMin: 0
+  initialFireDelayMax: 0
+  cooldownJitter: 0

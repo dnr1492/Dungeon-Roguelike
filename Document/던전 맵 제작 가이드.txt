@@ -49,6 +49,7 @@ RoomPropPainter
 	- 장식할 패턴(RoomPropPattern)들을 테마별로 중앙 관리 → 1개만 존재
 	- 테마를 설정하고 각 방을 장식할 패턴(RoomPropPattern)들을 할당
 	- Overrides에서 특정 방만의 장식 패턴을 할당 가능 → RoomPropPainter에서 "Per-Room Profile"를 적용
+        - 이름 네이밍 규칙: RoomPropThemeDB_<테마>
 
 RoomEncounter
 - 방에서 생성할 Enemy 프리팹을 Pool에 할당

@@ -2,13 +2,9 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
-[DisallowMultipleComponent]
-[RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(CircleCollider2D))]
 public class Bullet : MonoBehaviour
 {
-    [SerializeField] Rigidbody2D rb;
-    [SerializeField] CircleCollider2D col;
+    [SerializeField] CircleCollider2D circleCol;
 
     //총알 상태
     private float speed;
@@ -39,7 +35,7 @@ public class Bullet : MonoBehaviour
 
         //반경 세팅
         float sx = Mathf.Abs(transform.lossyScale.x);
-        col.radius = (sx > 0f) ? (radius / sx) : radius;
+        circleCol.radius = (sx > 0f) ? (radius / sx) : radius;
 
         //발사자와 충돌 무시
         ignored.Clear();
@@ -48,8 +44,8 @@ public class Bullet : MonoBehaviour
             for (int i = 0; i < ignoreColliders.Length; i++)
             {
                 var oc = ignoreColliders[i];
-                if (!oc || oc == col) continue;
-                Physics2D.IgnoreCollision(col, oc, true);
+                if (!oc || oc == circleCol) continue;
+                Physics2D.IgnoreCollision(circleCol, oc, true);
                 ignored.Add(oc);
             }
         }
@@ -103,7 +99,7 @@ public class Bullet : MonoBehaviour
         for (int i = 0; i < ignored.Count; i++)
         {
             var oc = ignored[i];
-            if (oc) Physics2D.IgnoreCollision(col, oc, false);
+            if (oc) Physics2D.IgnoreCollision(circleCol, oc, false);
         }
         ignored.Clear();
 
@@ -122,10 +118,10 @@ public class Bullet : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (!col) return;
+        if (!circleCol) return;
 
         //발사체 시각화
         Gizmos.color = new Color(0f, 0.8f, 1f, 0.9f);
-        Gizmos.DrawWireSphere(transform.position, col.radius);
+        Gizmos.DrawWireSphere(transform.position, circleCol.radius);
     }
 }
