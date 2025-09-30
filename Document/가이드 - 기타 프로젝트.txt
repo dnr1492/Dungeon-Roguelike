@@ -2,6 +2,7 @@
 - Tag: "누군지 식별/찾기"용
 - Layer: "물리/레이캐스트 필터"용
 - Sorting Layer: 그리기 순서일 뿐, 물리랑 무관
+- Character 네이밍: Player, Enemy
 
 LoS (시야)
 - 플레이어: 벽에 막히면 그 적은 타겟에서 제외 
@@ -10,3 +11,11 @@ LoS (시야)
 타이밍 (초발 지연 + 쿨다운 지터)
 - 플레이어: 미사용 (순수 fireRate만)
 - 적: 사용
+
+수동 설정
+- 플레이어
+	- damageFloatingTextPivot
+- 적 
+	- fireOrigin
+	- damageFloatingTextPivot
+	- TargetRing

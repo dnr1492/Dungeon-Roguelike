@@ -13,7 +13,7 @@ public class RoomGateTrigger : MonoBehaviour
     private readonly bool closeWhenSteppedInside = true;  //방 내부 entryDepthCells 칸 수만큼 밟았을 때만 문 닫기
     private readonly int entryDepthCells = 1;   //내부 감지 깊이(타일 수)
 
-    private Player enteredCharacter;  //방에 들어온 캐릭터
+    private Player enteredPlayer;  //방에 들어온 캐릭터
     private RoomPlacer placer;
     private bool lockedOnce;
 
@@ -85,7 +85,7 @@ public class RoomGateTrigger : MonoBehaviour
         if (!placer) placer = FindObjectOfType<RoomPlacer>();
         if (!placer) return;
 
-        enteredCharacter = ch;
+        enteredPlayer = ch;
         lockedOnce = true;
         HandleEnterRoom();
     }
@@ -106,7 +106,7 @@ public class RoomGateTrigger : MonoBehaviour
         //플레이어가 방 경계로부터 'entryDepthCells' 이상 내부로 들어왔는 지 체크
         if (!IsSteppedInsideDepth(other.transform.position)) return;
 
-        enteredCharacter = ch;
+        enteredPlayer = ch;
         lockedOnce = true;
         HandleEnterRoom();
     }
@@ -141,7 +141,7 @@ public class RoomGateTrigger : MonoBehaviour
         var rommEncounter = roomRoot.GetComponentInChildren<RoomEncounter>();
 
         //플레이어 전투 On
-        if (enteredCharacter) rommEncounter.OnPlayerEntered(enteredCharacter, worldBounds);
+        if (enteredPlayer) rommEncounter.OnPlayerEntered(enteredPlayer, worldBounds);
     }
 
     private bool IsCombatRoom()

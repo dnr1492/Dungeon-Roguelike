@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class Player : MonoBehaviour
 {
@@ -34,6 +35,20 @@ public class Player : MonoBehaviour
 
     private bool fireHeld;     //버튼을 누르고 있는 중
     private bool firePressed;  //이번 프레임에 "딱 한 번" 눌림 (edge)
+    #endregion
+
+    #region 무기 발사 쿨다운
+    public event Action<float> OnFired;  //발사 성공 시, 쿨다운 길이(초) 전달
+    public float CooldownRemaining => Mathf.Max(0f, nextFireTime - Time.time);
+    public float CooldownRatio  //0 = 발사, 1 = 발사 준비
+    {
+        get
+        {
+            float interval = 1f / Mathf.Max(0.0001f, rangedData.fireRate);
+            float remain = Mathf.Clamp01((nextFireTime - Time.time) / interval);
+            return 1f - remain;  // ← 준비(충전) 진행도
+        }
+    }
     #endregion
 
     private void Update()
@@ -132,8 +147,25 @@ public class Player : MonoBehaviour
             if (d < best) { best = d; bestT = t; }
         }
 
+        var prev = target;
         target = bestT;
-        if (target && stats.stickyTime > 0f) stickyUntil = Time.time + stats.stickyTime;
+
+        if (target && stats.stickyTime > 0f)
+            stickyUntil = Time.time + stats.stickyTime;
+
+        if (prev != target)
+        {
+            if (prev)
+            {
+                var prevEnemy = prev.GetComponent<Enemy>();
+                if (prevEnemy) prevEnemy.SetTargeted(false);
+            }
+            if (target)
+            {
+                var newEnemy = target.GetComponent<Enemy>();
+                if (newEnemy) newEnemy.SetTargeted(true);
+            }
+        }
     }
 
     private bool IsValidTarget(Transform t)
@@ -203,6 +235,8 @@ public class Player : MonoBehaviour
                 GameManager.Instance.ReturnBullet
             );
         }
+
+        OnFired?.Invoke(interval);
     }
     #endregion
 

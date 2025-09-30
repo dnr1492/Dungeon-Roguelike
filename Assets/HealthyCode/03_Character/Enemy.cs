@@ -9,7 +9,8 @@ public class Enemy : MonoBehaviour
     [SerializeField] WeaponData_Melee meleeData;
     [SerializeField] Rigidbody2D rb;
     [SerializeField] Transform fireOrigin;  //원거리 사용 시 총구 (없으면 transform)
-    
+    [SerializeField] Transform targetRing;
+
     private Transform target;  //Player Transform
     private int attackerId;  //GetInstanceID()
     private bool encounterActive = false;  //방 전투 활성 제어
@@ -253,6 +254,13 @@ public class Enemy : MonoBehaviour
         }
     }
     #endregion
+
+    //타겟링 표시/해제 (Player가 호출)
+    public void SetTargeted(bool on)
+    {
+        if (targetRing)
+            targetRing.gameObject.SetActive(on);
+    }
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()

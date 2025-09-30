@@ -15,10 +15,6 @@ public class UIPlayerHealthBar : MonoBehaviour
 
     private void Awake()
     {
-        slider.minValue = 0f;
-        slider.maxValue = 1f;
-        slider.interactable = false;
-
         health.OnHealthChanged += OnHealthChanged;
     }
 
