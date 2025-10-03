@@ -12,7 +12,7 @@ LoS (시야)
 - 플레이어: 미사용 (순수 fireRate만)
 - 적: 사용
 
-수동 설정
+캐릭터(플레이어, 적) 수동 설정
 - 플레이어
 	- damageFloatingTextPivot
 - 적 

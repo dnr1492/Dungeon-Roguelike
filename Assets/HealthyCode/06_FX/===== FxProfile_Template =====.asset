@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e925049f5275dd14484571556eca3ee7, type: 3}
+  m_Name: ===== FxProfile_Template =====
+  m_EditorClassIdentifier: 
+  ruleSets:
+  - {fileID: 11400000, guid: 6b305fa0723af8542857c1cae88a3c70, type: 2}
+  animMap: {fileID: 11400000, guid: 58ad11ab63589584398275f7ee5f98ab, type: 2}

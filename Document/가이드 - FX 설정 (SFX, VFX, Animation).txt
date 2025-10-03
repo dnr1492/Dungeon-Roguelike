@@ -1,0 +1,56 @@
+*ScriptableObject (SO)
+
+1. AnimMap (AM)
+- 이벤트별 → 파라미터 매핑 작성
+- 파라미터가 트리거인 경우에만 사용
+- 지속 상태의 파라미터의 경우는 코드로 직접 구현
+
+2. FxRullSet (RS)
+- 공통과 전용을 분리 (예: Common + Player 전용)
+- SFX, VFX 등 설정
+- 우선순위: Theme/특수 > 개체 전용 > 공통(Common) 순으로 ruleSets[] 정렬
+
+3. FxProfile (FXP)
+- 공통 + 전용 RS를 우선순위 높은 순으로 배열
+- AM 할당
+
+4. 객체에 할당
+- FxRouter
+- AnimDriver
+- FxApplier (+FxProfile 연결)
+- (필요 시) ~FXBridge
+
+5. 코드로 이벤트 연결
+- ~FXBridge 배선 또는 직접 Handle(...) 호출
+
+*네이밍 규칙 예시
+
+1. FxRullSet
+- RS_Common_Base
+- RS_Player_Ranged_Default
+- RS_Goblin_Body_FireTheme
+
+2. AnimMap
+- AM_Player_Body_Default
+- AM_Goblin_Weapon_Melee
+
+3. FxProfile
+- FXP_Player_Default
+- FXP_Goblin_Melee_Fire
+- FXP_BossMinotaur_Phase2
+
+*Do / Don’t
+
+1. Do
+- 공통-전용 레이어링으로 중복 감소
+- 프로필 한 개로 개체별 세트 관리
+- AnimMap은 트리거 중심, 지속 상태는 코드로
+
+2. Don’t
+- 개체마다 룰셋을 무조건 새로 만들지 않기 (공통 재사용)
+- 트리거만으로 이동 등 "지속" 상태를 억지로 제어하지 않기
+
+*플레이어 적용 예시
+- RS_Common_Base, AM_Player_Body_Default, FXP_Player_Default 생성
+- 플레이어 프리팹에 FxRouter/AnimDriver/FxApplier 세팅
+- 플레이어 Hit/Death 동작 확인
